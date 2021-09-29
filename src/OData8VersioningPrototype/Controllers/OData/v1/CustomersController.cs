@@ -1,14 +1,17 @@
 ﻿// Licensed under the MIT License.
 
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using OData8VersioningPrototype.Models.OData.v1;
+using OData8VersioningPrototype.ODataConfigurations;
 
 namespace OData8VersioningPrototype.Controllers.OData.v1
 {
-    [ApiVersion("1.0")]
+    [ApiVersionV1]
+    [ODataControllerRoute(EntitySets.Customers)]
     public class CustomersController : ODataController
     {
         private readonly Customer[] _customers = {

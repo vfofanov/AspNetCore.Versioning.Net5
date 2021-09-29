@@ -3,6 +3,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.OData.Routing.Conventions;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using OData8VersioningPrototype.ApiConventions;
+using OData8VersioningPrototype.Controllers.OData;
 using OData8VersioningPrototype.Models.OData;
 using OData8VersioningPrototype.ODataConfigurations;
 using OData8VersioningPrototype.ODataConfigurations.Common;
@@ -35,6 +38,9 @@ namespace OData8VersioningPrototype
 
             var modelProvider = new CustomODataModelProvider();
             services.AddSingleton<IODataModelProvider>(modelProvider);
+            
+            //NOTE: Hide OData controllers from Api Versioning 
+            //services.AddSingleton<IApiControllerFilter, IgnoreODataControllersForVersioningApiControllerFilter>();
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
@@ -49,14 +55,14 @@ namespace OData8VersioningPrototype
                 {
                     //NOTE:Replace metadata convension
                     options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
-                    options.Conventions.Add(new OnbMetadataRoutingConvention());
+                    options.Conventions.Add(new VersionedMetadataRoutingConvention<CustomMetadataController>());
                     
-                    options.AddRouteComponents(OnbODataConstants.VersionRoutePrefix, modelProvider.GetNameConventionEdmModel());
+                    options.AddRouteComponents(RouteODataConstants.VersionRouteComponentPrefix, modelProvider.GetNameConventionEdmModel());
                     
                     options.EnableQueryFeatures();
                 });
             
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, CustomODataRoutingMatcherPolicy>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, VersionedODataRoutingMatcherPolicy>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -6,7 +6,6 @@ using OData8VersioningPrototype.Models;
 
 namespace OData8VersioningPrototype.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {

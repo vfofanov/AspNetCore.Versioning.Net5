@@ -18,13 +18,13 @@ using Microsoft.OData.Edm;
 
 namespace OData8VersioningPrototype.ODataConfigurations.Common
 {
-    internal class CustomODataRoutingMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
+    internal class VersionedODataRoutingMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {
         private readonly IODataTemplateTranslator _translator;
         private readonly IODataModelProvider _provider;
         private readonly ODataOptions _options;
 
-        public CustomODataRoutingMatcherPolicy(IODataTemplateTranslator translator,
+        public VersionedODataRoutingMatcherPolicy(IODataTemplateTranslator translator,
             IODataModelProvider provider,
             IOptions<ODataOptions> options)
         {
@@ -69,7 +69,7 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
                     continue;
                 }
 
-                var apiVersionStr = candidate.Values?[OnbODataConstants.VersionParameterName]?.ToString();
+                var apiVersionStr = candidate.Values?[RouteODataConstants.VersionParameterName]?.ToString();
                 if (apiVersionStr == null)
                 {
                     candidates.SetValidity(i, false);

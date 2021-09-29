@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using OData8VersioningPrototype.Models.OData;
+using OData8VersioningPrototype.ODataConfigurations;
 
 namespace OData8VersioningPrototype.Controllers.OData
 {
+    [ODataControllerRoute(EntitySets.Books)]
     public class BooksController : ODataController
     {
         private readonly BookStoreContext _db;
@@ -39,7 +41,7 @@ namespace OData8VersioningPrototype.Controllers.OData
         }
 
         [EnableQuery]
-        public IActionResult Post([FromBody]Book book)
+        public IActionResult Post([FromBody] Book book)
         {
             _db.Books.Add(book);
             _db.SaveChanges();

@@ -8,12 +8,13 @@ namespace OData8VersioningPrototype.ODataConfigurations
         /// <inheritdoc />
         protected override Type GetNameConventionType(Type entityType)
         {
-            return typeof(NameConventionDummyModel);
+            return entityType;
+            //return typeof(NameConventionDummyModel);
         }
-
-        private class NameConventionDummyModel
-        {
-            public int Id { get; set; }
-        }
+    }
+    
+    public class NameConventionDummyModel
+    {
+        public int Id { get; set; }
     }
 }

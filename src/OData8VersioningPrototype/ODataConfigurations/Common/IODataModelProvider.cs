@@ -2,6 +2,7 @@
 
 using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.OData.Edm;
 
 namespace OData8VersioningPrototype.ODataConfigurations.Common

@@ -7,6 +7,8 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
     
     public abstract class NameConventionModelBuilder : ODataConventionModelBuilder
     {
+        
+        
         /// <summary>
         /// Select specific dummy for name convention type
         /// </summary>
