@@ -1,5 +1,4 @@
-﻿// Copyright saxu@microsoft.com.  All rights reserved.
-// Licensed under the MIT License.
+﻿// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -16,16 +15,17 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.Extensions.Options;
 using Microsoft.OData.Edm;
+using OData8VersioningPrototype.ODataConfigurations.Common;
 
-namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
+namespace OData8VersioningPrototype.ODataConfigurations
 {
-    internal class OnbODataRoutingMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
+    internal class CustomODataRoutingMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {
         private readonly IODataTemplateTranslator _translator;
         private readonly IODataModelProvider _provider;
         private readonly ODataOptions _options;
 
-        public OnbODataRoutingMatcherPolicy(IODataTemplateTranslator translator,
+        public CustomODataRoutingMatcherPolicy(IODataTemplateTranslator translator,
             IODataModelProvider provider,
             IOptions<ODataOptions> options)
         {
@@ -47,7 +47,7 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
             {
                 throw new ArgumentNullException(nameof(httpContext));
             }
-
+            
             var odataFeature = httpContext.ODataFeature();
             if (odataFeature.Path != null)
             {
@@ -76,9 +76,10 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
                     candidates.SetValidity(i, false);
                     continue;
                 }
+
                 var apiVersion = ApiVersion.Parse(apiVersionStr);
 
-                var model = GetEdmModel(apiVersion);
+                var model = _provider.GetEdmModel(apiVersion, httpContext.RequestServices);
                 if (model == null)
                 {
                     candidates.SetValidity(i, false);
@@ -125,7 +126,7 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
             return Task.CompletedTask;
         }
 
-        private ODataPathTemplate GetODataPathTemplate(ODataPathTemplate metadataTemplate, IEdmModel model)
+        private static ODataPathTemplate GetODataPathTemplate(ODataPathTemplate metadataTemplate, IEdmModel model)
         {
             if (metadataTemplate == null)
             {
@@ -154,7 +155,6 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
                     }
                         break;
                     default:
-                        //TODO: OData class with the same name for different versions v1.Customers and v2.Customers
                         segments.Add(originSegment);
                         break;
                 }
@@ -164,7 +164,7 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
         }
 
         //NOTE: Copied from KeySegmentTemplate due it internal ((
-        //TODO: Run using reflection
+        //TODO: Run via reflection
         /// <summary>
         /// Create <see cref="KeySegmentTemplate"/> based on the given entity type and navigation source.
         /// </summary>
@@ -172,7 +172,7 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
         /// <param name="navigationSource">The given navigation source.</param>
         /// <param name="keyPrefix">The prefix used before key template.</param>
         /// <returns>The built <see cref="KeySegmentTemplate"/>.</returns>
-        internal static KeySegmentTemplate CreateKeySegment(IEdmEntityType entityType, IEdmNavigationSource navigationSource, string keyPrefix = "key")
+        private static KeySegmentTemplate CreateKeySegment(IEdmEntityType entityType, IEdmNavigationSource navigationSource, string keyPrefix = "key")
         {
             if (entityType == null)
             {
@@ -217,20 +217,15 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
             }
         }
 
-        private IEdmModel GetEdmModel(ApiVersion apiVersion)
-        {
-            return _provider.GetEdmModel(apiVersion.ToString());
-        }
-
         private static bool IsApiVersionMatch(EndpointMetadataCollection metadata, ApiVersion apiVersion)
         {
-            var apiVersionsNeutral = metadata.OfType<ApiVersionNeutralAttribute>().ToList();
+            var apiVersionsNeutral = metadata.OfType<IApiVersionNeutral>().ToList();
             if (apiVersionsNeutral.Count != 0)
             {
                 return true;
             }
 
-            var apiVersions = metadata.OfType<ApiVersionAttribute>().ToList();
+            var apiVersions = metadata.OfType<IApiVersionProvider>().ToList();
             if (apiVersions.Count == 0)
             {
                 // If no [ApiVersion] on the controller,
@@ -238,8 +233,9 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
                 return true;
             }
 
-            foreach (var item in apiVersions)
+            for (var i = 0; i < apiVersions.Count; i++)
             {
+                var item = apiVersions[i];
                 if (item.Versions.Contains(apiVersion))
                 {
                     return true;

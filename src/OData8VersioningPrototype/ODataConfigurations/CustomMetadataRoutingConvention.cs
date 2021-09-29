@@ -1,20 +1,20 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using BookStoreAspNetCoreOData8Preview.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.AspNetCore.OData.Routing.Conventions;
 using Microsoft.AspNetCore.OData.Routing.Template;
+using OData8VersioningPrototype.Controllers.OData;
 
-namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
+namespace OData8VersioningPrototype.ODataConfigurations
 {
    /// <summary>
     /// The convention for $metadata.
     /// </summary>
     public sealed class OnbMetadataRoutingConvention : IODataControllerActionConvention
     {
-        private static readonly TypeInfo metadataTypeInfo = typeof(OnbMetadataController).GetTypeInfo();
+        private static readonly TypeInfo MetadataTypeInfo = typeof(CustomMetadataController).GetTypeInfo();
 
         /// <summary>
         /// Gets the order value for determining the order of execution of conventions.
@@ -31,7 +31,7 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
             }
 
             // This convention only applies to "MetadataController".
-            return context.Controller.ControllerType == metadataTypeInfo;
+            return context.Controller.ControllerType == MetadataTypeInfo;
         }
 
         /// <inheritdoc />
@@ -50,21 +50,21 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
 
             switch (actionName)
             {
-                case nameof(OnbMetadataController.GetMetadata):
+                case nameof(CustomMetadataController.GetMetadata):
                 {
                     // for ~$metadata
                     var template = new ODataPathTemplate(MetadataSegmentTemplate.Instance);
                     action.AddSelector(HttpMethods.Get, context.Prefix, context.Model, template, context.Options?.RouteOptions);
                     return true;
                 }
-                case nameof(OnbMetadataController.GetServiceDocument):
+                case nameof(CustomMetadataController.GetServiceDocument):
                 {
                     // GET for ~/
                     var template = new ODataPathTemplate();
                     action.AddSelector(HttpMethods.Get, context.Prefix, context.Model, template, context.Options?.RouteOptions);
                     return true;
                 }
-                case nameof(OnbMetadataController.GetOptions):
+                case nameof(CustomMetadataController.GetOptions):
                 {
                     //OPTIONS for ~/
                     var template = new ODataPathTemplate();

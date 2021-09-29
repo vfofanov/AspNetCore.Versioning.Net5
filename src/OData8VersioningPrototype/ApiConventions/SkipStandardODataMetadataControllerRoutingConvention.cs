@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 
-namespace BookStoreAspNetCoreOData8Preview.ApiConventions
+namespace OData8VersioningPrototype.ApiConventions
 {
     public class SkipStandardODataMetadataControllerRoutingConvention : Attribute, IControllerModelConvention
     {

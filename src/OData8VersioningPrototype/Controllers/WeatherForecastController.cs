@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using OData8VersioningPrototype.Models;
 
-namespace BookStoreAspNetCoreOData8Preview.Controllers
+namespace OData8VersioningPrototype.Controllers
 {
     [ApiController]
-    [ApiVersion("1.0")]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
@@ -15,17 +14,8 @@ namespace BookStoreAspNetCoreOData8Preview.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        // The Web API will only accept tokens 1) for users, and 2) having the "access_as_user" scope for this API
-        private static readonly string[] scopeRequiredByApi = { "access_as_user" };
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
-
         [HttpGet]
+        [ApiVersionV1]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
@@ -40,7 +30,7 @@ namespace BookStoreAspNetCoreOData8Preview.Controllers
         
         [HttpGet]
         [Route("Cool")]
-        [ApiVersion("2.0")]
+        [ApiVersionV2]
         public IEnumerable<WeatherForecast> GetCool()
         {
             var rng = new Random();

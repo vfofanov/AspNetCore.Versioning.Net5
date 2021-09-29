@@ -1,5 +1,4 @@
 using System;
-using BookStoreAspNetCoreOData8Preview.ODataConfigurations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.Extensions.Primitives;
@@ -7,13 +6,12 @@ using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Csdl;
 
-namespace BookStoreAspNetCoreOData8Preview.Controllers
+namespace OData8VersioningPrototype.Controllers.OData
 {
      /// <summary>
     /// Represents a controller for generating OData service and metadata ($metadata) documents.
     /// </summary>
-    [ApiVersionNeutral]
-    public class OnbMetadataController : ControllerBase
+    public class CustomMetadataController : ControllerBase
     {
         private static readonly Version DefaultEdmxVersion = new(4, 0);
 

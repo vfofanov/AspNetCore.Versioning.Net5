@@ -1,32 +1,32 @@
-﻿// Copyright saxu@microsoft.com.  All rights reserved.
-// Licensed under the MIT License.
+﻿// Licensed under the MIT License.
 
 using System.Linq;
-using BookStoreAspNetCoreOData8Preview.Models.v1;
-using BookStoreAspNetCoreOData8Preview.ODataConfigurations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using OData8VersioningPrototype.Models.OData.v2;
 
-namespace BookStoreAspNetCoreOData8Preview.Controllers.v1
+namespace OData8VersioningPrototype.Controllers.OData.v2
 {
-    [ApiVersion("1.0")]
+    [ApiVersionV2]
     public class CustomersController : ODataController
     {
         private readonly Customer[] _customers = {
             new()
             {
-                Id = 1,
-                ApiVersion = "v1.0",
-                Name = "Sam",
-                PhoneNumber = "111-222-3333"
+                Id = 11,
+                ApiVersion = "v2.0",
+                FirstName = "YXS",
+                LastName = "WU",
+                Email = "yxswu@abc.com"
             },
             new()
             {
-                Id = 2,
-                ApiVersion = "v1.0",
-                Name = "Peter",
-                PhoneNumber = "456-ABC-8888"
+                Id = 12,
+                ApiVersion = "v2.0",
+                FirstName = "KIO",
+                LastName = "XU",
+                Email = "kioxu@efg.com"
             }
         };
 

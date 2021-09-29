@@ -1,6 +1,6 @@
 using System;
 
-namespace BookStoreAspNetCoreOData8Preview
+namespace OData8VersioningPrototype.Models
 {
     public class WeatherForecast
     {

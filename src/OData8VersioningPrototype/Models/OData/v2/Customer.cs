@@ -1,7 +1,6 @@
-﻿// Copyright saxu@microsoft.com.  All rights reserved.
-// Licensed under the MIT License.
+﻿// Licensed under the MIT License.
 
-namespace BookStoreAspNetCoreOData8Preview.Models.v2
+namespace OData8VersioningPrototype.Models.OData.v2
 {
     public class Customer : CustomerBase
     {

@@ -1,23 +1,23 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Routing;
+using Microsoft.AspNetCore.OData.Routing.Conventions;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
-using System.Linq;
-using BookStoreAspNetCoreOData8Preview.ApiConventions;
-using BookStoreAspNetCoreOData8Preview.Models;
-using BookStoreAspNetCoreOData8Preview.ODataConfigurations;
-using Microsoft.AspNetCore.OData.Routing.Conventions;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.OData;
+using Microsoft.Extensions.Hosting;
+using OData8VersioningPrototype.ApiConventions;
+using OData8VersioningPrototype.Models.OData;
+using OData8VersioningPrototype.ODataConfigurations;
+using OData8VersioningPrototype.ODataConfigurations.Common;
 
-namespace BookStoreAspNetCoreOData8Preview
+namespace OData8VersioningPrototype
 {
     public class Startup
     {
@@ -32,8 +32,9 @@ namespace BookStoreAspNetCoreOData8Preview
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BookStoreContext>(opt => opt.UseInMemoryDatabase("BookLists"));
-            
-            services.AddSingleton<IODataModelProvider, OnbODataModelProvider>();
+
+            var modelProvider = new CustomODataModelProvider();
+            services.AddSingleton<IODataModelProvider>(modelProvider);
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
@@ -49,13 +50,13 @@ namespace BookStoreAspNetCoreOData8Preview
                     //NOTE:Replace metadata convension
                     options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
                     options.Conventions.Add(new OnbMetadataRoutingConvention());
-
-                    options.AddRouteComponents(OnbODataConstants.VersionRoutePrefix, OnbODataModelProvider.GetFullEdmModel());
+                    
+                    options.AddRouteComponents(OnbODataConstants.VersionRoutePrefix, modelProvider.GetNameConventionEdmModel());
                     
                     options.EnableQueryFeatures();
                 });
             
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, OnbODataRoutingMatcherPolicy>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, CustomODataRoutingMatcherPolicy>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,12 +1,9 @@
 using System;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 
-
-//TODO: Idea: {version:apiVersion}/ for all api controllers
 //based on https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-5.0#use-application-model-to-customize-attribute-routes-1
-namespace BookStoreAspNetCoreOData8Preview.ApiConventions
+namespace OData8VersioningPrototype.ApiConventions
 {
     public class VersionedPrefixRoutingConvention : Attribute, IControllerModelConvention
     {

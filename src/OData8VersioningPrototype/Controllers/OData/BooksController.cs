@@ -1,16 +1,12 @@
 ﻿using System.Linq;
-using BookStoreAspNetCoreOData8Preview.Models;
-using BookStoreAspNetCoreOData8Preview.ODataConfigurations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
+using OData8VersioningPrototype.Models.OData;
 
-namespace BookStoreAspNetCoreOData8Preview.Controllers
+namespace OData8VersioningPrototype.Controllers.OData
 {
-    [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
-    [ApiVersionNeutral]
     public class BooksController : ODataController
     {
         private readonly BookStoreContext _db;

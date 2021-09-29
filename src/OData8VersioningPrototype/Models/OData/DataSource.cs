@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BookStoreAspNetCoreOData8Preview.Models
+namespace OData8VersioningPrototype.Models.OData
 {
     public static class DataSource
     {

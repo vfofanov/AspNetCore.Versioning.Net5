@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30524.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStoreAspNetCoreOData8Preview", "BookStoreAspNetCoreOData8Preview\BookStoreAspNetCoreOData8Preview.csproj", "{A6D0446C-2717-4002-8F47-12EDA5782779}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OData8VersioningPrototype", "OData8VersioningPrototype\OData8VersioningPrototype.csproj", "{A6D0446C-2717-4002-8F47-12EDA5782779}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

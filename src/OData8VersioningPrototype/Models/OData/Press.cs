@@ -1,4 +1,4 @@
-﻿namespace BookStoreAspNetCoreOData8Preview.Models
+﻿namespace OData8VersioningPrototype.Models.OData
 {
     public class Press
     {
