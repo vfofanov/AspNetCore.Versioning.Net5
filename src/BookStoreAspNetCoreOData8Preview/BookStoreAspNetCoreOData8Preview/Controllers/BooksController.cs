@@ -1,21 +1,25 @@
 ﻿using System.Linq;
-using BookStore.Models;
+using BookStoreAspNetCoreOData8Preview.Models;
+using BookStoreAspNetCoreOData8Preview.ODataConfigurations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookStore.Controllers
+namespace BookStoreAspNetCoreOData8Preview.Controllers
 {
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
+    [ApiVersionNeutral]
     public class BooksController : ODataController
     {
-        private BookStoreContext _db;
+        private readonly BookStoreContext _db;
 
         public BooksController(BookStoreContext context)
         {
             _db = context;
             _db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-            if (context.Books.Count() == 0)
+            if (!context.Books.Any())
             {
                 foreach (var b in DataSource.GetBooks())
                 {
@@ -26,14 +30,14 @@ namespace BookStore.Controllers
             }
         }
 
-        [EnableQuery(PageSize = 1)]
-        public IActionResult Get()
+        [EnableQuery]
+        public IQueryable<Book> Get()
         {
-            return Ok(_db.Books);
+            return _db.Books;
         }
 
         [EnableQuery]
-        public IActionResult Get(int key, string version)
+        public IActionResult Get(int key)
         {
             return Ok(_db.Books.FirstOrDefault(c => c.Id == key));
         }
@@ -47,9 +51,9 @@ namespace BookStore.Controllers
         }
 
         [EnableQuery]
-        public IActionResult Delete([FromBody]int key)
+        public IActionResult Delete(int key)
         {
-            Book b = _db.Books.FirstOrDefault(c => c.Id == key);
+            var b = _db.Books.FirstOrDefault(c => c.Id == key);
             if (b == null)
             {
                 return NotFound();

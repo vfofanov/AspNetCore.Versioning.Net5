@@ -1,20 +1,21 @@
-using BookStore.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Formatter.Deserialization;
 using Microsoft.AspNetCore.OData.Routing;
-using Microsoft.AspNetCore.OData.Routing.Template;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OData.Edm;
-using Microsoft.OData.ModelBuilder;
 using System.Collections.Generic;
 using System.Linq;
+using BookStoreAspNetCoreOData8Preview.ApiConventions;
+using BookStoreAspNetCoreOData8Preview.Models;
+using BookStoreAspNetCoreOData8Preview.ODataConfigurations;
+using Microsoft.AspNetCore.OData.Routing.Conventions;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.OData;
 
 namespace BookStoreAspNetCoreOData8Preview
 {
@@ -31,10 +32,30 @@ namespace BookStoreAspNetCoreOData8Preview
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BookStoreContext>(opt => opt.UseInMemoryDatabase("BookLists"));
-            services.AddControllers();
-            services.AddOData(opt => opt.AddModel("odata", GetEdmModel())
-                .AddModel("v{version}", GetEdmModel())
-                .Filter().Select().Expand());
+            
+            services.AddSingleton<IODataModelProvider, OnbODataModelProvider>();
+            services.AddApiVersioning(options =>
+            {
+                options.ReportApiVersions = true;
+            });
+
+            services.AddControllers(options =>
+                {
+                    options.Conventions.Add(new VersionedPrefixRoutingConvention());
+                    options.Conventions.Add(new SkipStandardODataMetadataControllerRoutingConvention());
+                })
+                .AddOData(options =>
+                {
+                    //NOTE:Replace metadata convension
+                    options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
+                    options.Conventions.Add(new OnbMetadataRoutingConvention());
+
+                    options.AddRouteComponents(OnbODataConstants.VersionRoutePrefix, OnbODataModelProvider.GetFullEdmModel());
+                    
+                    options.EnableQueryFeatures();
+                });
+            
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, OnbODataRoutingMatcherPolicy>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,8 +66,10 @@ namespace BookStoreAspNetCoreOData8Preview
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseODataBatching();
+            //app.UseODataBatching();
 
+            app.UseODataRouteDebug(); // Remove it if not needed
+            
             app.UseRouting();
 
             // Test middelware
@@ -59,7 +82,7 @@ namespace BookStoreAspNetCoreOData8Preview
                 }
 
                 IEnumerable<string> templates;
-                IODataRoutingMetadata metadata = endpoint.Metadata.GetMetadata<IODataRoutingMetadata>();
+                var metadata = endpoint.Metadata.GetMetadata<IODataRoutingMetadata>();
                 if (metadata != null)
                 {
                     templates = metadata.Template.GetTemplates();
@@ -75,13 +98,6 @@ namespace BookStoreAspNetCoreOData8Preview
                 endpoints.MapControllers();
             });
         }
-
-        private static IEdmModel GetEdmModel()
-        {
-            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
-            builder.EntitySet<Book>("Books");
-            builder.EntitySet<Press>("Presses");
-            return builder.GetEdmModel();
-        }
+       
     }
 }

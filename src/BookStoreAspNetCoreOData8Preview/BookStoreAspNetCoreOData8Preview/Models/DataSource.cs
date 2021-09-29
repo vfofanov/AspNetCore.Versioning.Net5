@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace BookStore.Models
+namespace BookStoreAspNetCoreOData8Preview.Models
 {
     public static class DataSource
     {
@@ -19,7 +16,7 @@ namespace BookStore.Models
             _books = new List<Book>();
 
             // book #1
-            Book book = new Book
+            var book = new Book
             {
                 Id = 1,
                 ISBN = "978-0-321-87758-1",

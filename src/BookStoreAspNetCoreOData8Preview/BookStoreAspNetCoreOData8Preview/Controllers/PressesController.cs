@@ -1,14 +1,14 @@
 ﻿using System.Linq;
-using BookStore.Models;
+using BookStoreAspNetCoreOData8Preview.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 
-namespace BookStore.Controllers
+namespace BookStoreAspNetCoreOData8Preview.Controllers
 {
     public class PressesController : ODataController
     {
-        private BookStoreContext _db;
+        private readonly BookStoreContext _db;
 
         public PressesController(BookStoreContext context)
         {

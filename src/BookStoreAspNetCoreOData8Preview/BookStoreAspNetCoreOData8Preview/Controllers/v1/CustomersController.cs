@@ -2,28 +2,26 @@
 // Licensed under the MIT License.
 
 using System.Linq;
+using BookStoreAspNetCoreOData8Preview.Models.v1;
+using BookStoreAspNetCoreOData8Preview.ODataConfigurations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using ODataApiVersion.Models.v1;
 
-namespace ODataApiVersion.Controllers.v1
+namespace BookStoreAspNetCoreOData8Preview.Controllers.v1
 {
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/[controller]")]
     public class CustomersController : ODataController
     {
-        private Customer[] customers = new Customer[]
-        {
-            new Customer
+        private readonly Customer[] _customers = {
+            new()
             {
                 Id = 1,
                 ApiVersion = "v1.0",
                 Name = "Sam",
                 PhoneNumber = "111-222-3333"
             },
-            new Customer
+            new()
             {
                 Id = 2,
                 ApiVersion = "v1.0",
@@ -33,15 +31,15 @@ namespace ODataApiVersion.Controllers.v1
         };
 
         [EnableQuery]
-        public IActionResult Get()
+        public IQueryable<Customer> Get()
         {
-            return Ok(customers);
+            return _customers.AsQueryable();
         }
 
         [EnableQuery]
         public IActionResult Get(int key)
         {
-            var customer = customers.FirstOrDefault(c => c.Id == key);
+            var customer = _customers.FirstOrDefault(c => c.Id == key);
             if (customer == null)
             {
                 return NotFound($"Cannot find customer with Id={key}.");
