@@ -15,9 +15,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.Extensions.Options;
 using Microsoft.OData.Edm;
-using OData8VersioningPrototype.ODataConfigurations.Common;
 
-namespace OData8VersioningPrototype.ODataConfigurations
+namespace OData8VersioningPrototype.ODataConfigurations.Common
 {
     internal class CustomODataRoutingMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {

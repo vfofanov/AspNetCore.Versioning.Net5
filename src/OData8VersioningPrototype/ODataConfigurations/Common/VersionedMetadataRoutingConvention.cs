@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.OData.Routing.Conventions;
 using Microsoft.AspNetCore.OData.Routing.Template;
 using OData8VersioningPrototype.Controllers.OData;
 
-namespace OData8VersioningPrototype.ODataConfigurations
+namespace OData8VersioningPrototype.ODataConfigurations.Common
 {
    /// <summary>
     /// The convention for $metadata.

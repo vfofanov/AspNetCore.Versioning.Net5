@@ -1,5 +1,4 @@
 using System;
-using OData8VersioningPrototype.Models.OData;
 using OData8VersioningPrototype.ODataConfigurations.Common;
 
 namespace OData8VersioningPrototype.ODataConfigurations
@@ -9,7 +8,12 @@ namespace OData8VersioningPrototype.ODataConfigurations
         /// <inheritdoc />
         protected override Type GetNameConventionType(Type entityType)
         {
-            return typeof(DummyModel);
+            return typeof(NameConventionDummyModel);
+        }
+
+        private class NameConventionDummyModel
+        {
+            public int Id { get; set; }
         }
     }
 }
