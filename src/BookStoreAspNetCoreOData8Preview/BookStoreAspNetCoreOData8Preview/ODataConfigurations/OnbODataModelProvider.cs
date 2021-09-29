@@ -46,9 +46,9 @@ namespace BookStoreAspNetCoreOData8Preview.ODataConfigurations
                     break;
                 case "full":
                     //NOTE: We need this for properly work standard entitites' conventions.
-                    builder.EntitySet<Book>("Books");
-                    builder.EntitySet<Press>("Presses");
-                    builder.EntitySet<Address>("Addresses");
+                    builder.EntitySet<DummyModel>("Books");
+                    builder.EntitySet<DummyModel>("Presses");
+                    builder.EntitySet<DummyModel>("Addresses");
                     builder.EntitySet<DummyModel>("Customers");
                     break;
                 default:
