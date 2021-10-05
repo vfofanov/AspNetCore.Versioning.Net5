@@ -54,6 +54,9 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
         private IEdmModel CreateModel(TKey key)
         {
             var builder = CreateBulder();
+            
+            builder.EnableLowerCamelCase();
+            
             FillEdmModel(builder, key);
             return builder.GetEdmModel();
         }

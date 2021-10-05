@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using OData8VersioningPrototype.Models;
 
 namespace OData8VersioningPrototype.Controllers
 {
-    [ApiVersionV1]
-    [ApiVersionV2]
+    [ODataIgnored]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : Controller
