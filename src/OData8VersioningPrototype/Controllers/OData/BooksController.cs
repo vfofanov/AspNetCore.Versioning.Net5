@@ -1,15 +1,16 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using OData8VersioningPrototype.Models.OData;
-using OData8VersioningPrototype.ODataConfigurations;
+using OData8VersioningPrototype.ODataConfigurations.Common;
 
 namespace OData8VersioningPrototype.Controllers.OData
 {
-    [ODataControllerRoute(EntitySets.Books)]
-    public class BooksController : ODataController
+    /// <summary>
+    /// Books' endpoint
+    /// </summary>
+    public class BooksController : ODataController<Book>
     {
         private readonly BookStoreContext _db;
 

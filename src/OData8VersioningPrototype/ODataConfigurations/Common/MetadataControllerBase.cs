@@ -13,7 +13,13 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
     /// </summary>
     public abstract class MetadataControllerBase : ControllerBase
     {
-        protected virtual ODataVersion ODataVersion { get; } = ODataVersion.V401;
+        /// <inheritdoc />
+        protected MetadataControllerBase(ODataVersion oDataVersion = ODataVersion.V4)
+        {
+            ODataVersion = oDataVersion;
+        }
+
+        protected ODataVersion ODataVersion { get; }
 
         /// <summary>
         /// Generates the OData $metadata document.

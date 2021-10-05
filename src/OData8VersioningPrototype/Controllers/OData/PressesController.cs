@@ -2,15 +2,13 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 using OData8VersioningPrototype.Models.OData;
-using OData8VersioningPrototype.ODataConfigurations;
+using OData8VersioningPrototype.ODataConfigurations.Common;
 
 namespace OData8VersioningPrototype.Controllers.OData
 {
     [ApiVersionV2]
-    [ODataControllerRoute(EntitySets.Presses)]
-    public class PressesController : ODataController
+    public class PressesController : ODataController<Press>
     {
         private readonly BookStoreContext _db;
 
@@ -41,7 +39,7 @@ namespace OData8VersioningPrototype.Controllers.OData
         /// Returns suppliers that have deals with current user's buyer company SuppliersThatHaveDealsWithCurrentBuyer
         /// </summary>
         /// <returns></returns>
-        [HttpGet(EntityOperations.EBooks)]
+        [HttpGet]
         [EnableQuery(PageSize = 20, AllowedQueryOptions = AllowedQueryOptions.All)]
         public Task<IQueryable<Press>> EBooks()
         {

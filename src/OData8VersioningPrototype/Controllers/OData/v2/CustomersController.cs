@@ -3,15 +3,13 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 using OData8VersioningPrototype.Models.OData.v2;
-using OData8VersioningPrototype.ODataConfigurations;
+using OData8VersioningPrototype.ODataConfigurations.Common;
 
 namespace OData8VersioningPrototype.Controllers.OData.v2
 {
     [ApiVersionV2]
-    [ODataControllerRoute(EntitySets.Customers)]
-    public class CustomersController : ODataController
+    public class CustomersController : ODataController<Customer>
     {
         private readonly Customer[] _customers = {
             new()

@@ -9,8 +9,7 @@ using Microsoft.OData.ModelBuilder;
 
 namespace OData8VersioningPrototype.ODataConfigurations.Common
 {
-    public abstract class ODataModelProvider<TKey, TNameConventionEdmModelBuilder> : IODataModelProvider
-    where TNameConventionEdmModelBuilder:ODataConventionModelBuilder, new()
+    public abstract class ODataModelProvider<TKey> : IODataModelProvider
     {
         private readonly Lazy<IEdmModel> _nameConventionModel;
 
@@ -35,22 +34,26 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
         
         protected virtual IEdmModel CreateNameConventionEdmModel()
         {
-            var builder = new TNameConventionEdmModelBuilder();
+            var builder =  CreateBulder();
             foreach (var key in GetAllKeys())
             {
                 FillEdmModel(builder,key);
             }
             return builder.GetEdmModel();
         }
-        
+
+        protected AdvODataConventionModelBuilder CreateBulder(ODataConventionModelBuilder builder = null)
+        {
+            return new AdvODataConventionModelBuilder(builder ?? new ODataConventionModelBuilder());
+        }
+
         protected abstract TKey GetKey(ApiVersion version, IServiceProvider provider);
         protected abstract IEnumerable<TKey> GetAllKeys();        
-
-        protected abstract void FillEdmModel(ODataConventionModelBuilder builder, TKey key);
+        protected abstract void FillEdmModel(AdvODataConventionModelBuilder builder, TKey key);
         
         private IEdmModel CreateModel(TKey key)
         {
-            var builder = new ODataConventionModelBuilder();
+            var builder = CreateBulder();
             FillEdmModel(builder, key);
             return builder.GetEdmModel();
         }

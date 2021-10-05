@@ -6,8 +6,11 @@ using OData8VersioningPrototype.Models;
 
 namespace OData8VersioningPrototype.Controllers
 {
+    [ApiVersionV1]
+    [ApiVersionV2]
+    [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController : Controller
     {
         private static readonly string[] Summaries = {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -28,9 +31,9 @@ namespace OData8VersioningPrototype.Controllers
         }
         
         [HttpGet]
-        [Route("Cool")]
+        [Route("Foo")]
         [ApiVersionV2]
-        public IEnumerable<WeatherForecast> GetCool()
+        public IEnumerable<WeatherForecast> GetFoo()
         {
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
