@@ -5,12 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.AspNetCore.OData.Routing;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Routing.Template;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
@@ -41,6 +38,7 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
             return endpoints.Any(e => e.Metadata.OfType<ODataRoutingMetadata>().FirstOrDefault() != null);
         }
 
+        /// <inheritdoc />
         public Task ApplyAsync(HttpContext httpContext, CandidateSet candidates)
         {
             if (httpContext == null)
@@ -64,29 +62,21 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
                     continue;
                 }
 
-                var metadata = candidate.Endpoint.Metadata.OfType<IODataRoutingMetadata>().FirstOrDefault();
-                if (metadata == null)
+                var oDataRoutingMetadata = candidate.Endpoint.Metadata.OfType<IODataRoutingMetadata>().FirstOrDefault();
+                if (oDataRoutingMetadata == null)
                 {
                     continue;
                 }
 
-                var metadataModel= metadata.Model;
-                var versionAnnotation = metadataModel.GetAnnotationValue<ApiVersionAnnotation>(metadataModel);
-                if (versionAnnotation == null)
+                var apiVersion = oDataRoutingMetadata.GetODataApiVersion();
+                if (apiVersion == null || !candidate.Endpoint.IsODataApiVersionMatch(apiVersion))
                 {
                     candidates.SetValidity(i, false);
                     continue;
                 }
-                var apiVersion = versionAnnotation.ApiVersion;
 
                 var model = _provider.GetEdmModel(apiVersion, httpContext.RequestServices);
                 if (model == null)
-                {
-                    candidates.SetValidity(i, false);
-                    continue;
-                }
-
-                if (!IsApiVersionMatch(candidate.Endpoint.Metadata, apiVersion))
                 {
                     candidates.SetValidity(i, false);
                     continue;
@@ -96,12 +86,12 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
 
                 try
                 {
-                    var template = GetODataPathTemplate(metadata.Template, model);
+                    var template = GetODataPathTemplate(oDataRoutingMetadata.Template, model);
                     
                     var odataPath = _translator.Translate(template, translatorContext);
                     if (odataPath != null)
                     {
-                        odataFeature.RoutePrefix = metadata.Prefix;
+                        odataFeature.RoutePrefix = oDataRoutingMetadata.Prefix;
                         odataFeature.Model = model;
                         odataFeature.Path = odataPath;
 
@@ -215,34 +205,6 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
             {
                 source[data.Key] = data.Value;
             }
-        }
-
-        private static bool IsApiVersionMatch(EndpointMetadataCollection metadata, ApiVersion apiVersion)
-        {
-            var apiVersionsNeutral = metadata.OfType<IApiVersionNeutral>().ToList();
-            if (apiVersionsNeutral.Count != 0)
-            {
-                return true;
-            }
-
-            var apiVersions = metadata.OfType<IApiVersionProvider>().ToList();
-            if (apiVersions.Count == 0)
-            {
-                // If no [ApiVersion] on the controller,
-                // Let's simply return true, it means it can work the input version or any version.
-                return true;
-            }
-
-            for (var i = 0; i < apiVersions.Count; i++)
-            {
-                var item = apiVersions[i];
-                if (item.Versions.Contains(apiVersion))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

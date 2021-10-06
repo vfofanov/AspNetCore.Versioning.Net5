@@ -39,7 +39,7 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
         {
             var model = CreateModel(key);
 
-            model.SetAnnotationValue(model, new ApiVersionAnnotation(apiVersion));
+            model.SetApiVersion(apiVersion);
 
             return model;
         }

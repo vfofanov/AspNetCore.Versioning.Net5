@@ -105,9 +105,7 @@ namespace OData8VersioningPrototype
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseODataBatching();
-
-            app.UseODataRouteDebug(); // Remove it if not needed
+            app.UseODataRouteVersioningDebug(); // Page with versioning endpoints
             
             app.UseRouting();
 
