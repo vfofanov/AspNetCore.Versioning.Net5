@@ -29,6 +29,7 @@ namespace OData8VersioningPrototype.Controllers.OData
             }
         }
 
+        [ApiVersionV2]
         [EnableQuery]
         public IQueryable<Book> Get()
         {
@@ -41,6 +42,7 @@ namespace OData8VersioningPrototype.Controllers.OData
             return Ok(_db.Books.FirstOrDefault(c => c.Id == key));
         }
 
+        [ApiVersionV2]
         [EnableQuery]
         public IActionResult Post([FromBody] Book book)
         {
@@ -48,7 +50,8 @@ namespace OData8VersioningPrototype.Controllers.OData
             _db.SaveChanges();
             return Created(book);
         }
-
+        
+        [ApiVersionV2]
         [EnableQuery]
         public IActionResult Delete(int key)
         {

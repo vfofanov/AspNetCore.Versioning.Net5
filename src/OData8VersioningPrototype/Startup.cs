@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.OData.Routing.Conventions;
@@ -54,6 +55,8 @@ namespace OData8VersioningPrototype
                 {
                     options.Conventions.Add(new VersionedPrefixRoutingConvention());
                     options.Conventions.Add(new SkipStandardODataMetadataControllerRoutingConvention());
+                    //TODO: Add Route to odata controllers and add it to ApiExplorer
+                    //options.Conventions.Add(new ApiVisibilityConvention());
                 })
                 .AddNewtonsoftJson(options =>
                 {
@@ -61,16 +64,18 @@ namespace OData8VersioningPrototype
                 })
                 .AddOData(options =>
                 {
+                    var apiVersions = ApiVersions.List;
+                    var routePrefix = RouteODataConstants.VersionRouteComponentPrefixStringFormat;
+                    
                     //NOTE:Replace metadata convension
                     options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
                     options.Conventions.Add(new VersionedMetadataRoutingConvention<CustomMetadataController>());
+                    //options.Conventions.Add(new VersionedFilterRoutingConvention());
                     
-                    //add common route for 
-                    options.AddRouteComponents(RouteODataConstants.VersionRouteComponentPrefix, EdmCoreModel.Instance);
-                    foreach (var version in ApiVersions.List)
+                    foreach (var version in apiVersions)
                     {
-                        var routePrefix = string.Format(RouteODataConstants.VersionRouteComponentPrefixStringFormat, version);
-                        options.AddRouteComponents(routePrefix, modelProvider.GetNameConventionEdmModel(version));
+                        var prefix = string.Format(routePrefix, version);
+                        options.AddRouteComponents(prefix, modelProvider.GetNameConventionEdmModel(version));
                     }
                     //
                     

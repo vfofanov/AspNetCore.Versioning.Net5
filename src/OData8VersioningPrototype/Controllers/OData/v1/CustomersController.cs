@@ -28,12 +28,14 @@ namespace OData8VersioningPrototype.Controllers.OData.v1
             }
         };
 
+        [HttpGet]
         [EnableQuery]
         public IQueryable<Customer> Get()
         {
             return _customers.AsQueryable();
         }
 
+        [HttpGet]
         [EnableQuery]
         public IActionResult Get(int key)
         {

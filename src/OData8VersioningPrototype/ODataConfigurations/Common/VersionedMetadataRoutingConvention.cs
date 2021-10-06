@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.OData.Routing.Template;
 
 namespace OData8VersioningPrototype.ODataConfigurations.Common
 {
-   /// <summary>
+    /// <summary>
     /// The convention for $metadata.
     /// </summary>
     public sealed class VersionedMetadataRoutingConvention<TMetadataController> : IODataControllerActionConvention
-   where TMetadataController:MetadataControllerBase
+        where TMetadataController : MetadataControllerBase
     {
         private static readonly TypeInfo MetadataTypeInfo = typeof(TMetadataController).GetTypeInfo();
 
@@ -44,7 +44,7 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
 
             Debug.Assert(context.Controller != null);
             Debug.Assert(context.Action != null);
-            
+
             var action = context.Action;
             var actionName = action.ActionName;
 
