@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.OData.Routing.Conventions;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OData.Edm;
 using Newtonsoft.Json.Converters;
 using OData8VersioningPrototype.ApiConventions;
 using OData8VersioningPrototype.Controllers.OData;
@@ -63,7 +65,14 @@ namespace OData8VersioningPrototype
                     options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
                     options.Conventions.Add(new VersionedMetadataRoutingConvention<CustomMetadataController>());
                     
-                    options.AddRouteComponents(RouteODataConstants.VersionRouteComponentPrefix, modelProvider.GetNameConventionEdmModel());
+                    //add common route for 
+                    options.AddRouteComponents(RouteODataConstants.VersionRouteComponentPrefix, EdmCoreModel.Instance);
+                    foreach (var version in ApiVersions.List)
+                    {
+                        var routePrefix = string.Format(RouteODataConstants.VersionRouteComponentPrefixStringFormat, version);
+                        options.AddRouteComponents(routePrefix, modelProvider.GetNameConventionEdmModel(version));
+                    }
+                    //
                     
                     options.EnableQueryFeatures();
                 });

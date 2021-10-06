@@ -11,53 +11,45 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
 {
     public abstract class ODataModelProvider<TKey> : IODataModelProvider
     {
-        private readonly Lazy<IEdmModel> _nameConventionModel;
 
         private readonly ConcurrentDictionary<TKey, IEdmModel> _cached = new();
 
-        protected ODataModelProvider()
+        public IEdmModel GetNameConventionEdmModel(ApiVersion apiVersion)
         {
-            _nameConventionModel = new Lazy<IEdmModel>(CreateNameConventionEdmModel);
+            var key = GetNameConventionKey(apiVersion);
+            return _cached.GetOrAdd(key, key => CreateNameConventionModel(apiVersion, key));
         }
-        
-        public IEdmModel GetNameConventionEdmModel()
-        {
-            return _nameConventionModel.Value;
-        }
-        
+
         public IEdmModel GetEdmModel(ApiVersion apiVersion, IServiceProvider serviceProvider)
         {
             var key = GetKey(apiVersion, serviceProvider);
             return _cached.GetOrAdd(key, CreateModel);
         }
 
-        
-        protected virtual IEdmModel CreateNameConventionEdmModel()
-        {
-            var builder =  CreateBulder();
-            foreach (var key in GetAllKeys())
-            {
-                FillEdmModel(builder,key);
-            }
-            return builder.GetEdmModel();
-        }
-
-        protected AdvODataConventionModelBuilder CreateBulder(ODataConventionModelBuilder builder = null)
+        protected AdvODataConventionModelBuilder CreateBuilder(ODataConventionModelBuilder builder = null)
         {
             return new AdvODataConventionModelBuilder(builder ?? new ODataConventionModelBuilder());
         }
 
+        protected abstract TKey GetNameConventionKey(ApiVersion apiVersion);
         protected abstract TKey GetKey(ApiVersion version, IServiceProvider provider);
-        protected abstract IEnumerable<TKey> GetAllKeys();        
         protected abstract void FillEdmModel(AdvODataConventionModelBuilder builder, TKey key);
-        
+
+        private IEdmModel CreateNameConventionModel(ApiVersion apiVersion, TKey key)
+        {
+            var model = CreateModel(key);
+
+            model.SetAnnotationValue(model, new ApiVersionAnnotation(apiVersion));
+
+            return model;
+        }
+
         private IEdmModel CreateModel(TKey key)
         {
-            var builder = CreateBulder();
-            
-            builder.EnableLowerCamelCase();
+            var builder = CreateBuilder();
             
             FillEdmModel(builder, key);
+            
             return builder.GetEdmModel();
         }
     }

@@ -14,6 +14,6 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
         /// Model for run standard entites' name conventions for odata controllers.
         /// </summary>
         /// <returns></returns>
-        IEdmModel GetNameConventionEdmModel();
+        IEdmModel GetNameConventionEdmModel(ApiVersion apiVersion);
     }
 }

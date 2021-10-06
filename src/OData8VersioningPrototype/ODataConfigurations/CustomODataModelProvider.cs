@@ -12,27 +12,29 @@ namespace OData8VersioningPrototype.ODataConfigurations
     public class CustomODataModelProvider : ODataModelProvider<ApiVersion>
     {
         /// <inheritdoc />
-        protected override ApiVersion GetKey(ApiVersion version, IServiceProvider provider)
+        protected override ApiVersion GetNameConventionKey(ApiVersion version)
         {
             return version;
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<ApiVersion> GetAllKeys()
+        protected override ApiVersion GetKey(ApiVersion version, IServiceProvider provider)
         {
-            return ApiVersions.List;
+            return version;
         }
+
+        
 
         /// <inheritdoc />
         protected override void FillEdmModel(AdvODataConventionModelBuilder builder, ApiVersion key)
         {
-            switch (key.ToString())
+            switch (key)
             {
-                case "1.0":
+                case { MajorVersion: 1, MinorVersion: 0 }:
                     builder.Add<Book, BooksController>();
                     builder.EntitySet<Customer, CustomersController>();
                     break;
-                case "2.0":
+                case { MajorVersion: 2, MinorVersion: 0 }:
                     builder.EntitySet<Book, BooksController>();
                     builder.Add<Press, PressesController>(type =>
                     {
@@ -40,13 +42,14 @@ namespace OData8VersioningPrototype.ODataConfigurations
                             .Function(nameof(PressesController.EBooks))
                             .ReturnsCollectionFromEntitySet<Press, PressesController>();
                     });
-                    
-                    //TODO: Uncomment after implement correct versioning mechanism
-                    //builder.EntitySet<Models.OData.v2.Customer,Controllers.OData.v2.CustomersController>();
+
+                    builder.EntitySet<Models.OData.v2.Customer, Controllers.OData.v2.CustomersController>();
                     break;
                 default:
                     throw new NotSupportedException($"The input version '{key}' is not supported!");
             }
+
+            builder.EnableLowerCamelCase();
         }
     }
 }

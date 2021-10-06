@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Extensions;
 using Microsoft.AspNetCore.OData.Routing;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Routing.Template;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
@@ -69,14 +70,14 @@ namespace OData8VersioningPrototype.ODataConfigurations.Common
                     continue;
                 }
 
-                var apiVersionStr = candidate.Values?[RouteODataConstants.VersionParameterName]?.ToString();
-                if (apiVersionStr == null)
+                var metadataModel= metadata.Model;
+                var versionAnnotation = metadataModel.GetAnnotationValue<ApiVersionAnnotation>(metadataModel);
+                if (versionAnnotation == null)
                 {
                     candidates.SetValidity(i, false);
                     continue;
                 }
-
-                var apiVersion = ApiVersion.Parse(apiVersionStr);
+                var apiVersion = versionAnnotation.ApiVersion;
 
                 var model = _provider.GetEdmModel(apiVersion, httpContext.RequestServices);
                 if (model == null)
