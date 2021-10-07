@@ -19,7 +19,7 @@ namespace TestSample
         }
     }
 
-    public class ApiVersionV1Attribute : ApiVersionAttribute
+    public sealed class ApiVersionV1Attribute : ApiVersionAttribute
     {
         /// <inheritdoc />
         public ApiVersionV1Attribute() 
@@ -28,7 +28,7 @@ namespace TestSample
         }
     }
     
-    public class ApiVersionV2Attribute : ApiVersionAttribute
+    public sealed class ApiVersionV2Attribute : ApiVersionAttribute
     {
         /// <inheritdoc />
         public ApiVersionV2Attribute() 
@@ -36,6 +36,4 @@ namespace TestSample
         {
         }
     }
-    
-    
 }

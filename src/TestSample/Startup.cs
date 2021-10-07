@@ -1,13 +1,10 @@
-using System.Collections.Generic;
 using System.Linq;
 using AspNetCore.OData.Versioning;
 using AspNetCore.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.OData.Routing.Conventions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +18,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using TestSample.Controllers.OData;
 using TestSample.Models.OData;
-using TestSample.ODataConfigurations;
+using TestSample.Swagger;
 
 namespace TestSample
 {
@@ -45,7 +42,7 @@ namespace TestSample
             var apiVersionsProvider = ApiVersions.GetVersionsProvider();
             services.AddSingleton(apiVersionsProvider);
             
-            var modelProvider = new MyODataModelProvider();
+            var modelProvider = new ODataModelProvider();
             services.AddSingleton<IODataModelProvider>(modelProvider);
 
             //NOTE: Only for debug
@@ -74,16 +71,14 @@ namespace TestSample
                 .AddOData(options =>
                 {
                     //NOTE:Replace metadata convension
-                    options.Conventions.Remove(Enumerable.OfType<MetadataRoutingConvention>(options.Conventions).First());
+                    options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
                     options.Conventions.Add(new VersionedMetadataRoutingConvention<MetadataController>());
-                    //options.Conventions.Add(new VersionedFilterODataRoutingConvention(apiVersionsProvider));
                     
                     foreach (var version in apiVersionsProvider.Versions)
                     {
                         var prefix = string.Format(odataVersionPrefix, version.PathPartName);
                         options.AddRouteComponents(prefix, modelProvider.GetNameConventionEdmModel(version.Version));
                     }
-                    //
                     
                     options.EnableQueryFeatures();
                 });
@@ -91,20 +86,8 @@ namespace TestSample
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, VersionedODataRoutingMatcherPolicy>());
             
             //Swagger
-            // services.AddVersionedApiExplorer(
-            //     options =>
-            //     {
-            //         // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
-            //         // version format: https://github.com/microsoft/aspnet-api-versioning/wiki/Version-Format#custom-api-version-format-strings
-            //         options.GroupNameFormat = @"'v'VV";
-            //     });
-
             services.AddMvcCore().AddApiExplorer();
-            // services.TryAddSingleton<IOptionsFactory<ApiExplorerOptions>, ApiExplorerOptionsFactory<ApiExplorerOptions>>();
-            // services.TryAddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
-            // services.TryAddEnumerable(ServiceDescriptor.Transient<IApiDescriptionProvider, VersionedApiDescriptionProvider>() );
-            
-            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenOptions>();
             services.AddSwaggerGen();
         }
 
@@ -114,42 +97,22 @@ namespace TestSample
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseODataRouteDebug(); //OData debugging endpoints page 
             }
-
-            app.UseODataRouteDebug(); // Page with versioning endpoints
             
             app.UseRouting();
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(options =>
             {
                 var versionProvider = app.ApplicationServices.GetRequiredService<IApiVersionInfoProvider>();
                 foreach (var apiVersion in versionProvider.Versions)
                 {
                     var name = apiVersion.PathPartName;
-                    c.SwaggerEndpoint($"/swagger/{name}/swagger.json", name);
+                    options.SwaggerEndpoint($"/swagger/{name}/swagger.json", name);
                 }
-                c.RoutePrefix = string.Empty;
-                c.DocExpansion(DocExpansion.None);
-            });
-            
-            // Test middelware
-            app.Use(next => context =>
-            {
-                var endpoint = context.GetEndpoint();
-                if (endpoint == null)
-                {
-                    return next(context);
-                }
-
-                IEnumerable<string> templates;
-                var metadata = endpoint.Metadata.GetMetadata<IODataRoutingMetadata>();
-                if (metadata != null)
-                {
-                    templates = metadata.Template.GetTemplates();
-                }
-
-                return next(context);
+                options.RoutePrefix = string.Empty;
+                options.DocExpansion(DocExpansion.None);
             });
 
             app.UseAuthorization();
@@ -159,6 +122,5 @@ namespace TestSample
                 endpoints.MapControllers();
             });
         }
-       
     }
 }

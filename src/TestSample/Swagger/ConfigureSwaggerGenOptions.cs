@@ -7,16 +7,16 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace TestSample
+namespace TestSample.Swagger
 {
-    public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+    public class ConfigureSwaggerGenOptions : IConfigureOptions<SwaggerGenOptions>
     {
         private readonly IApiVersionInfoProvider _versionInfoProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
+        /// Initializes a new instance of the <see cref="ConfigureSwaggerGenOptions"/> class.
         /// </summary>
-        public ConfigureSwaggerOptions(IApiVersionInfoProvider versionInfoProvider)
+        public ConfigureSwaggerGenOptions(IApiVersionInfoProvider versionInfoProvider)
         {
             if (versionInfoProvider == null)
             {
