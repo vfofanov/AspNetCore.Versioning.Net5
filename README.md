@@ -1,4 +1,4 @@
-# OData 8.0 Versioning prototype
+# NET5 ASP.Net Core and OData 8.0 Versioning
 
 OData 8.0 worked prototype with versioning and different edm models for different api versions
 
