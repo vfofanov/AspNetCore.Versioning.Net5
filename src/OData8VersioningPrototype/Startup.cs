@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Routing;
@@ -15,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.OData.Edm;
 using Newtonsoft.Json.Converters;
 using OData8VersioningPrototype.ApiConventions;
 using OData8VersioningPrototype.Controllers.OData;
@@ -43,17 +41,20 @@ namespace OData8VersioningPrototype
 
             var modelProvider = new CustomODataModelProvider();
             services.AddSingleton<IODataModelProvider>(modelProvider);
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IApplicationModelProvider, VersioningRoutingApplicationModelProvider>(_ =>
+                    new VersioningRoutingApplicationModelProvider(ApiVersions.List)));
             
             //NOTE: Hide OData controllers from Api Versioning 
             //services.AddSingleton<IApiControllerFilter, IgnoreODataControllersForVersioningApiControllerFilter>();
-            services.AddApiVersioning(options =>
-            {
-                options.ReportApiVersions = true;
-            });
+            // services.AddApiVersioning(options =>
+            // {
+            //     options.ReportApiVersions = true;
+            // });
 
             services.AddControllers(options =>
                 {
-                    options.Conventions.Add(new VersionedPrefixRoutingConvention());
                     options.Conventions.Add(new SkipStandardODataMetadataControllerRoutingConvention());
                     //TODO: Add Route to odata controllers and add it to ApiExplorer
                     //options.Conventions.Add(new ApiVisibilityConvention());
@@ -70,7 +71,6 @@ namespace OData8VersioningPrototype
                     //NOTE:Replace metadata convension
                     options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
                     options.Conventions.Add(new VersionedMetadataRoutingConvention<CustomMetadataController>());
-                    //options.Conventions.Add(new VersionedFilterRoutingConvention());
                     
                     foreach (var version in apiVersions)
                     {
@@ -85,13 +85,13 @@ namespace OData8VersioningPrototype
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, VersionedODataRoutingMatcherPolicy>());
             
             //Swagger
-            services.AddVersionedApiExplorer(
-                options =>
-                {
-                    // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
-                    // version format: https://github.com/microsoft/aspnet-api-versioning/wiki/Version-Format#custom-api-version-format-strings
-                    options.GroupNameFormat = @"'v'VV";
-                });
+            // services.AddVersionedApiExplorer(
+            //     options =>
+            //     {
+            //         // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
+            //         // version format: https://github.com/microsoft/aspnet-api-versioning/wiki/Version-Format#custom-api-version-format-strings
+            //         options.GroupNameFormat = @"'v'VV";
+            //     });
 
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen();
