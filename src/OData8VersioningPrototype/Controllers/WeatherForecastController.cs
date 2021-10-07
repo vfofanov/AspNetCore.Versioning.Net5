@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Routing.Attributes;
+using OData8VersioningPrototype.ApiConventions;
 using OData8VersioningPrototype.Models;
 
 namespace OData8VersioningPrototype.Controllers
@@ -24,12 +25,14 @@ namespace OData8VersioningPrototype.Controllers
         [ApiVersionV1]
         public IEnumerable<WeatherForecast> Get()
         {
+            var apiVersion = this.GetApiVersion();
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
+                Summary = Summaries[rng.Next(Summaries.Length)],
+                ApiVersion = apiVersion?.ToString()
             })
             .ToArray();
         }
@@ -44,12 +47,14 @@ namespace OData8VersioningPrototype.Controllers
         [ApiVersionV2]
         public IEnumerable<WeatherForecast> GetV2(int count = 20)
         {
+            var apiVersion = this.GetApiVersion();
             var rng = new Random();
             return Enumerable.Range(1, count).Select(index => new WeatherForecast
                 {
                     Date = DateTime.Now.AddDays(index),
                     TemperatureC = 100,
-                    Summary = Summaries[rng.Next(Summaries.Length)]
+                    Summary = Summaries[rng.Next(Summaries.Length)],
+                    ApiVersion = apiVersion?.ToString()
                 })
                 .ToArray();
         }
