@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.OData.Routing.Controllers;
 
-namespace OData8VersioningPrototype.ODataConfigurations.Common
+namespace AspNetCore.OData.Versioning
 {
     public abstract class ODataController<TEntity> : ODataController, IODataController<TEntity>
     {

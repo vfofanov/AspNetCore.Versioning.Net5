@@ -1,11 +1,11 @@
 ﻿using System.Linq;
+using AspNetCore.OData.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
-using OData8VersioningPrototype.Models.OData;
-using OData8VersioningPrototype.ODataConfigurations.Common;
+using TestSample.Models.OData;
 
-namespace OData8VersioningPrototype.Controllers.OData
+namespace TestSample.Controllers.OData
 {
     /// <summary>
     /// Books' endpoint

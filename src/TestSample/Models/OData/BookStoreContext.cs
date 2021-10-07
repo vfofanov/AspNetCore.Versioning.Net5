@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace OData8VersioningPrototype.Models.OData
+namespace TestSample.Models.OData
 {
     public class BookStoreContext : DbContext
     {

@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 
-namespace AspNetCore.Versioning
+namespace AspNetCore.OData.Versioning
 {
     public class SkipStandardODataMetadataControllerRoutingConvention : Attribute, IControllerModelConvention
     {

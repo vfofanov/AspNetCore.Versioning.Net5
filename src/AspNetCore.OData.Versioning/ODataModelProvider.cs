@@ -2,12 +2,11 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 
-namespace OData8VersioningPrototype.ODataConfigurations.Common
+namespace AspNetCore.OData.Versioning
 {
     public abstract class ODataModelProvider<TKey> : IODataModelProvider
     {

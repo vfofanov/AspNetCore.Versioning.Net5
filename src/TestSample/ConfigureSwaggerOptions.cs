@@ -2,14 +2,12 @@
 using System.IO;
 using System.Reflection;
 using AspNetCore.Versioning;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using OData8VersioningPrototype.ApiConventions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace OData8VersioningPrototype
+namespace TestSample
 {
     public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {

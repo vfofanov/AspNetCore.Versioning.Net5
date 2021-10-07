@@ -1,7 +1,7 @@
 using System;
 using Microsoft.OData.ModelBuilder;
 
-namespace OData8VersioningPrototype.ODataConfigurations.Common
+namespace AspNetCore.OData.Versioning
 {
     public static class EdmExtensions
     {

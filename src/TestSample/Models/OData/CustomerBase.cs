@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT License.
 
-namespace OData8VersioningPrototype.Models.OData
+namespace TestSample.Models.OData
 {
     public abstract class CustomerBase
     {

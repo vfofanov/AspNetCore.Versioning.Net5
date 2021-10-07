@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.OData.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using OData8VersioningPrototype.Models.OData;
-using OData8VersioningPrototype.ODataConfigurations.Common;
+using TestSample.Models.OData;
 
-namespace OData8VersioningPrototype.Controllers.OData
+namespace TestSample.Controllers.OData
 {
     [ApiVersionV2]
     public class PressesController : ODataController<Press>

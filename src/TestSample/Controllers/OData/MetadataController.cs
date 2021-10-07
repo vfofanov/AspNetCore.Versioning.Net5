@@ -1,6 +1,6 @@
-using OData8VersioningPrototype.ODataConfigurations.Common;
+using AspNetCore.OData.Versioning;
 
-namespace OData8VersioningPrototype.Controllers.OData
+namespace TestSample.Controllers.OData
 {
     /// <inheritdoc />
     public sealed class MetadataController : MetadataControllerBase

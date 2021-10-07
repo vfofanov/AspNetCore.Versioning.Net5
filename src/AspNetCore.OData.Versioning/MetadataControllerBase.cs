@@ -6,7 +6,7 @@ using Microsoft.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.Edm.Csdl;
 
-namespace OData8VersioningPrototype.ODataConfigurations.Common
+namespace AspNetCore.OData.Versioning
 {
      /// <summary>
     /// Represents a controller for generating OData service and metadata ($metadata) documents.

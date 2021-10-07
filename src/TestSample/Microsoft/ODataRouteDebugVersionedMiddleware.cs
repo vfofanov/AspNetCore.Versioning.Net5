@@ -13,14 +13,14 @@ using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AspNetCore.OData.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using OData8VersioningPrototype.ODataConfigurations.Common;
 
-namespace Microsoft.AspNetCore.OData.Routing
+namespace TestSample.Microsoft
 {
     /// <summary>
     /// An OData route debug middleware

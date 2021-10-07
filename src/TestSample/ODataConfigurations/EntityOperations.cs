@@ -1,4 +1,4 @@
-namespace OData8VersioningPrototype.ODataConfigurations
+namespace TestSample.ODataConfigurations
 {
     public static class EntityOperations
     {

@@ -4,7 +4,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OData.Edm;
 
-namespace OData8VersioningPrototype.ODataConfigurations.Common
+namespace AspNetCore.OData.Versioning
 {
     public interface IODataModelProvider
     {

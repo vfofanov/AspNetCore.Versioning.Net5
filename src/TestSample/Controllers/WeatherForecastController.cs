@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using AspNetCore.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
-using OData8VersioningPrototype.ApiConventions;
-using OData8VersioningPrototype.Models;
+using TestSample.Models;
 
-namespace OData8VersioningPrototype.Controllers
+namespace TestSample.Controllers
 {
     
     public class WeatherForecastController : ApiController

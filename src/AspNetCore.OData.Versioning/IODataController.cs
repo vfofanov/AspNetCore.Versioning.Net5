@@ -1,4 +1,4 @@
-namespace OData8VersioningPrototype.ODataConfigurations.Common
+namespace AspNetCore.OData.Versioning
 {
     public interface IODataController<TEntity>
     {

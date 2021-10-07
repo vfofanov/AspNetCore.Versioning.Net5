@@ -7,9 +7,8 @@
 
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.OData.Routing;
 
-namespace Microsoft.AspNetCore.OData
+namespace TestSample.Microsoft
 {
     /// <summary>
     /// Provides extension methods for <see cref="IApplicationBuilder"/> to add OData routes.

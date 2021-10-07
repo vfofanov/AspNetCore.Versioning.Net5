@@ -13,7 +13,7 @@ namespace AspNetCore.Versioning
         /// <param name="controller"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static ApiVersion? GetApiVersion(this Controller controller)
+        public static ApiVersion? GetApiVersion(this ControllerBase controller)
         {
             if (controller == null)
             {

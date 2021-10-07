@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using AspNetCore.Versioning;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace OData8VersioningPrototype
+namespace TestSample
 {
     
     public class SwaggerDefaultValues : IOperationFilter

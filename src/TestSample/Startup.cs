@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using AspNetCore.OData.Versioning;
 using AspNetCore.Versioning;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Routing;
@@ -17,16 +17,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Converters;
-using OData8VersioningPrototype.ApiConventions;
-using OData8VersioningPrototype.Controllers.OData;
-using OData8VersioningPrototype.Models.OData;
-using OData8VersioningPrototype.ODataConfigurations;
-using OData8VersioningPrototype.ODataConfigurations.Common;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using static Microsoft.AspNetCore.Mvc.Versioning.ApiVersionReader;
+using TestSample.Controllers.OData;
+using TestSample.Models.OData;
+using TestSample.ODataConfigurations;
 
-namespace OData8VersioningPrototype
+namespace TestSample
 {
     public class Startup
     {
@@ -77,7 +74,7 @@ namespace OData8VersioningPrototype
                 .AddOData(options =>
                 {
                     //NOTE:Replace metadata convension
-                    options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
+                    options.Conventions.Remove(Enumerable.OfType<MetadataRoutingConvention>(options.Conventions).First());
                     options.Conventions.Add(new VersionedMetadataRoutingConvention<MetadataController>());
                     //options.Conventions.Add(new VersionedFilterODataRoutingConvention(apiVersionsProvider));
                     
@@ -119,7 +116,7 @@ namespace OData8VersioningPrototype
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseODataRouteVersioningDebug(); // Page with versioning endpoints
+            app.UseODataRouteDebug(); // Page with versioning endpoints
             
             app.UseRouting();
 

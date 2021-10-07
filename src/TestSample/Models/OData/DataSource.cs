@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OData8VersioningPrototype.Models.OData
+namespace TestSample.Models.OData
 {
     public static class DataSource
     {

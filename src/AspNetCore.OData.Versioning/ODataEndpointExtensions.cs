@@ -11,11 +11,11 @@ using Microsoft.AspNetCore.OData.Routing;
 using Microsoft.AspNetCore.OData.Routing.Conventions;
 using Microsoft.OData.Edm;
 
-namespace OData8VersioningPrototype.ODataConfigurations.Common
+namespace AspNetCore.OData.Versioning
 {
     public static class ODataEndpointExtensions
     {
-        public static ApiVersion GetODataApiVersion(this ODataControllerActionContext context)
+        public static ApiVersion? GetODataApiVersion(this ODataControllerActionContext context)
         {
             
             return GetODataApiVersion(context.Model);

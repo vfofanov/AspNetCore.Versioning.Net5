@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace OData8VersioningPrototype
+namespace TestSample
 {
     public class Program
     {

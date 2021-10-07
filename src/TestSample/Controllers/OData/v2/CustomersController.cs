@@ -1,29 +1,30 @@
 ﻿// Licensed under the MIT License.
 
 using System.Linq;
+using AspNetCore.OData.Versioning;
+using AspNetCore.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using OData8VersioningPrototype.Models.OData.v2;
-using OData8VersioningPrototype.ODataConfigurations.Common;
+using TestSample.Models.OData.v2;
 
-namespace OData8VersioningPrototype.Controllers.OData.v2
+namespace TestSample.Controllers.OData.v2
 {
     [ApiVersionV2]
     public class CustomersController : ODataController<Customer>
     {
-        private readonly Customer[] _customers = {
+        private static Customer[] GetCustomers(ApiVersion version) => new Customer[] {
             new()
             {
-                Id = 11,
-                ApiVersion = "v2.0",
+                Id = 21,
+                ApiVersion = version.ToString(),
                 FirstName = "YXS",
                 LastName = "WU",
                 Email = "yxswu@abc.com"
             },
             new()
             {
-                Id = 12,
-                ApiVersion = "v2.0",
+                Id = 22,
+                ApiVersion = version.ToString(),
                 FirstName = "KIO",
                 LastName = "XU",
                 Email = "kioxu@efg.com"
@@ -34,14 +35,14 @@ namespace OData8VersioningPrototype.Controllers.OData.v2
         [EnableQuery]
         public IQueryable<Customer> Get()
         {
-            return _customers.AsQueryable();
+            return GetCustomers(this.GetApiVersion()).AsQueryable();
         }
 
         [HttpGet]
         [EnableQuery]
         public IActionResult Get(int key)
         {
-            var customer = _customers.FirstOrDefault(c => c.Id == key);
+            var customer = GetCustomers(this.GetApiVersion()).FirstOrDefault(c => c.Id == key);
             if (customer == null)
             {
                 return NotFound($"Cannot find customer with Id={key}.");

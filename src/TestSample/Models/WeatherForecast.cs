@@ -1,6 +1,6 @@
 using System;
 
-namespace OData8VersioningPrototype.Models
+namespace TestSample.Models
 {
     public class WeatherForecast
     {

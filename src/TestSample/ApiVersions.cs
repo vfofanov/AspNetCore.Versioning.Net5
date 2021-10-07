@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using AspNetCore.Versioning;
+﻿using AspNetCore.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.VisualBasic;
-using OData8VersioningPrototype.ApiConventions;
 
-namespace OData8VersioningPrototype
+namespace TestSample
 {
     /// <summary>
     /// Contains logic for control api versioning

@@ -1,12 +1,12 @@
 using System;
+using AspNetCore.OData.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using OData8VersioningPrototype.Controllers.OData;
-using OData8VersioningPrototype.Controllers.OData.v1;
-using OData8VersioningPrototype.Models.OData;
-using OData8VersioningPrototype.Models.OData.v1;
-using OData8VersioningPrototype.ODataConfigurations.Common;
+using TestSample.Controllers.OData;
+using TestSample.Controllers.OData.v1;
+using TestSample.Models.OData;
+using TestSample.Models.OData.v1;
 
-namespace OData8VersioningPrototype.ODataConfigurations
+namespace TestSample.ODataConfigurations
 {
     public class MyODataModelProvider : ODataModelProvider<ApiVersion>
     {
