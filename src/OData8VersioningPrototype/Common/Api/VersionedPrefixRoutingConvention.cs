@@ -25,6 +25,8 @@ namespace OData8VersioningPrototype.ApiConventions
         {
             foreach (var selector in controller.Selectors)
             {
+//                controller.Selectors.Add(new SelectorModel(selector));
+
                 if (selector.AttributeRouteModel != null)
                 {
                     var routeModel = selector.AttributeRouteModel;

@@ -5,26 +5,35 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using OData8VersioningPrototype.ApiConventions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace OData8VersioningPrototype
 {
     public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
+        private readonly IApiVersionInfoProvider _versionInfoProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
         /// </summary>
-        public ConfigureSwaggerOptions()
+        public ConfigureSwaggerOptions(IApiVersionInfoProvider versionInfoProvider)
         {
+            if (versionInfoProvider == null)
+            {
+                throw new ArgumentNullException(nameof(versionInfoProvider));
+            }
+            _versionInfoProvider = versionInfoProvider;
         }
 
         public void Configure(SwaggerGenOptions options)
         {
             // add a swagger document for each discovered API version
             // note: you might choose to skip or document deprecated API versions differently
-            foreach (var description in ApiVersions.Descriptions)
+            foreach (var info in _versionInfoProvider.Versions)
             {
-                options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
+                var desc = info.Description;
+                options.SwaggerDoc(info.PathPartName, CreateInfoForApiVersion(desc));
             }
             
             // add a custom operation filter which sets default values

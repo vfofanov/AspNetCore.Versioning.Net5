@@ -3,22 +3,21 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using OData8VersioningPrototype.ODataConfigurations.Common;
 
 namespace OData8VersioningPrototype.ApiConventions
 {
     public class ApiVersioningRoutingApplicationModelProvider : IApplicationModelProvider
     {
-        private readonly List<(string Prefix, ApiVersionAnnotation Annotation)> _versionDescriptions;
+        private readonly List<(string Prefix, ApiVersionInfo Info)> _versionDescriptions;
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="versions"></param>
-        /// <param name="prefix"></param>
-        public ApiVersioningRoutingApplicationModelProvider(IEnumerable<ApiVersion> versions, string prefix = "v{0}")
+        /// <param name="versionInfoProvider"></param>
+        /// <param name="prefixFormat"></param>
+        public ApiVersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, string prefixFormat = "{0}")
         {
-            _versionDescriptions = versions.Select(v => (Prefix: string.Format(prefix, v), Annotation: new ApiVersionAnnotation(v))).ToList();
+            _versionDescriptions = versionInfoProvider.Versions.Select(v => (Prefix: string.Format(prefixFormat, v.PathPartName), Info: v)).ToList();
         }
 
         //After all providers
@@ -44,18 +43,21 @@ namespace OData8VersioningPrototype.ApiConventions
             }
         }
 
-        private void ProcessController(ControllerModel controller, (string Prefix, ApiVersionAnnotation Annotation) versionDesc)
+        private void ProcessController(ControllerModel controller, (string Prefix, ApiVersionInfo Info) versionDesc)
         {
-            controller.SetProperty(versionDesc.Annotation);
+            controller.SetProperty(versionDesc.Info.Annotation);
 
             ApplyRoutePrefix(controller, versionDesc);
 
+            controller.ApiExplorer.GroupName = versionDesc.Info.PathPartName;
+            controller.ApiExplorer.IsVisible = true;
+                
             for (var i = 0; i < controller.Actions.Count; i++)
             {
                 var action = controller.Actions[i];
-                if (IsApiVersionMatch(action.Attributes, versionDesc.Annotation.ApiVersion))
+                if (IsApiVersionMatch(action.Attributes, versionDesc.Info.Version))
                 {
-                    action.SetProperty(versionDesc.Annotation);
+                    action.SetProperty(versionDesc.Info.Annotation);
                 }
                 else
                 {
@@ -65,7 +67,7 @@ namespace OData8VersioningPrototype.ApiConventions
             }
         }
 
-        private static void ApplyRoutePrefix(ControllerModel controller, (string Prefix, ApiVersionAnnotation Annotation) versionDesc)
+        private static void ApplyRoutePrefix(ControllerModel controller, (string Prefix, ApiVersionInfo Info) versionDesc)
         {
             foreach (var selector in controller.Selectors)
             {
@@ -89,14 +91,14 @@ namespace OData8VersioningPrototype.ApiConventions
         }
 
 
-        public IReadOnlyList<(string Prefix, ApiVersionAnnotation Annotation)> GetVersions(IReadOnlyList<object> attributes)
+        public IReadOnlyList<(string Prefix, ApiVersionInfo Info)> GetVersions(IReadOnlyList<object> attributes)
         {
             if (IsApiVersionNeutral(attributes))
             {
                 return _versionDescriptions.AsReadOnly();
             }
 
-            var result = new List<(string Prefix, ApiVersionAnnotation Annotation)>(_versionDescriptions.Count);
+            var result = new List<(string Prefix, ApiVersionInfo Info)>(_versionDescriptions.Count);
             for (var i = 0; i < attributes.Count; i++)
             {
                 var attribute = attributes[i];
@@ -107,11 +109,11 @@ namespace OData8VersioningPrototype.ApiConventions
 
                 foreach (var version in versionProvider.Versions)
                 {
-                    if (result.FindIndex(x => x.Annotation.ApiVersion == version) >= 0)
+                    if (result.FindIndex(x => x.Info == version) >= 0)
                     {
                         continue;
                     }
-                    result.Add(_versionDescriptions.Find(x => x.Annotation.ApiVersion == version));
+                    result.Add(_versionDescriptions.Find(x => x.Info == version));
                 }
             }
             return result;
@@ -127,7 +129,7 @@ namespace OData8VersioningPrototype.ApiConventions
                 {
                     return true;
                 }
-                if (attribute is IApiVersionProvider)
+                if (attribute is IApiVersionInfoProvider)
                 {
                     result = false;
                 }

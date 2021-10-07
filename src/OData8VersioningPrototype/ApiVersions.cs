@@ -1,20 +1,25 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.VisualBasic;
+using OData8VersioningPrototype.ApiConventions;
 
 namespace OData8VersioningPrototype
 {
+    /// <summary>
+    /// Contains logic for control api versioning
+    /// </summary>
     public static class ApiVersions
     {
         public static readonly ApiVersion V1 = new(1, 0);
         public static readonly ApiVersion V2 = new(2, 0);
-        public static readonly ApiVersion[] List = { V1, V2 };
 
-        public static readonly ApiVersionDescription[] Descriptions =
+        public static IApiVersionInfoProvider GetVersionsProvider(string pathPartFormat = "v{0}")
         {
-            new(V1, V1.ToString(), false),
-            new(V2, V2.ToString(), false)
-        };
+            return new ApiVersionInfoProvider(V2,
+                new ApiVersionInfo(V1, string.Format(pathPartFormat, V1)),
+                new ApiVersionInfo(V2, string.Format(pathPartFormat, V2)));
+        }
     }
 
     public class ApiVersionV1Attribute : ApiVersionAttribute
@@ -34,4 +39,6 @@ namespace OData8VersioningPrototype
         {
         }
     }
+    
+    
 }

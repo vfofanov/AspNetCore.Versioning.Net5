@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using OData8VersioningPrototype.Controllers.OData;
 using OData8VersioningPrototype.Controllers.OData.v1;
@@ -9,7 +8,7 @@ using OData8VersioningPrototype.ODataConfigurations.Common;
 
 namespace OData8VersioningPrototype.ODataConfigurations
 {
-    public class CustomODataModelProvider : ODataModelProvider<ApiVersion>
+    public class MyODataModelProvider : ODataModelProvider<ApiVersion>
     {
         /// <inheritdoc />
         protected override ApiVersion GetNameConventionKey(ApiVersion version)

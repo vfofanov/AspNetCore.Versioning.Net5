@@ -28,4 +28,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Common" />
+    </ItemGroup>
+
 </Project>

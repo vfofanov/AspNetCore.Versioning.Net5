@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Routing;
@@ -22,6 +23,7 @@ using OData8VersioningPrototype.ODataConfigurations;
 using OData8VersioningPrototype.ODataConfigurations.Common;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using static Microsoft.AspNetCore.Mvc.Versioning.ApiVersionReader;
 
 namespace OData8VersioningPrototype
 {
@@ -41,14 +43,17 @@ namespace OData8VersioningPrototype
 
             var apiVersionPrefix = "api/{0}";
             const string odataVersionPrefix = "api/{0}/odata";
-            var apiVersions = ApiVersions.List;
             
-            var modelProvider = new CustomODataModelProvider();
+            var apiVersionsProvider = ApiVersions.GetVersionsProvider();
+            services.AddSingleton(apiVersionsProvider);
+            
+            var modelProvider = new MyODataModelProvider();
             services.AddSingleton<IODataModelProvider>(modelProvider);
 
+            //TODO: apiVersionPrefix to Options
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IApplicationModelProvider, ApiVersioningRoutingApplicationModelProvider>(
-                    _ => new ApiVersioningRoutingApplicationModelProvider(apiVersions, apiVersionPrefix)));
+                    _ => new ApiVersioningRoutingApplicationModelProvider(apiVersionsProvider, apiVersionPrefix)));
             
             //NOTE: Hide OData controllers from Api Versioning 
             //services.AddSingleton<IApiControllerFilter, IgnoreODataControllersForVersioningApiControllerFilter>();
@@ -73,10 +78,10 @@ namespace OData8VersioningPrototype
                     options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
                     options.Conventions.Add(new VersionedMetadataRoutingConvention<CustomMetadataController>());
                     
-                    foreach (var version in apiVersions)
+                    foreach (var version in apiVersionsProvider.Versions)
                     {
-                        var prefix = string.Format(odataVersionPrefix, version);
-                        options.AddRouteComponents(prefix, modelProvider.GetNameConventionEdmModel(version));
+                        var prefix = string.Format(odataVersionPrefix, version.PathPartName);
+                        options.AddRouteComponents(prefix, modelProvider.GetNameConventionEdmModel(version.Version));
                     }
                     //
                     
@@ -94,6 +99,11 @@ namespace OData8VersioningPrototype
             //         options.GroupNameFormat = @"'v'VV";
             //     });
 
+            services.AddMvcCore().AddApiExplorer();
+            services.TryAddSingleton<IOptionsFactory<ApiExplorerOptions>, ApiExplorerOptionsFactory<ApiExplorerOptions>>();
+            services.TryAddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IApiDescriptionProvider, VersionedApiDescriptionProvider>() );
+            
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen();
         }
@@ -113,9 +123,11 @@ namespace OData8VersioningPrototype
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                foreach (var apiVersion in ApiVersions.List)
+                var versionProvider = app.ApplicationServices.GetRequiredService<IApiVersionInfoProvider>();
+                foreach (var apiVersion in versionProvider.Versions)
                 {
-                    c.SwaggerEndpoint($"/swagger/v{apiVersion}/swagger.json", $"version {apiVersion}");
+                    var name = apiVersion.PathPartName;
+                    c.SwaggerEndpoint($"/swagger/{name}/swagger.json", name);
                 }
                 c.RoutePrefix = string.Empty;
                 c.DocExpansion(DocExpansion.None);
