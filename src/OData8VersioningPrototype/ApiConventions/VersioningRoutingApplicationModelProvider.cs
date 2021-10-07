@@ -3,17 +3,12 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.AspNetCore.OData.Extensions;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
-using Microsoft.AspNetCore.OData.Routing.Template;
-using Microsoft.OData.Edm;
 using OData8VersioningPrototype.ODataConfigurations.Common;
 
 namespace OData8VersioningPrototype.ApiConventions
 {
-    public class VersioningRoutingApplicationModelProvider : IApplicationModelProvider
+    public class ApiVersioningRoutingApplicationModelProvider : IApplicationModelProvider
     {
-        private readonly string _prefix;
         private readonly List<(string Prefix, ApiVersionAnnotation Annotation)> _versionDescriptions;
 
         /// <summary>
@@ -21,10 +16,9 @@ namespace OData8VersioningPrototype.ApiConventions
         /// </summary>
         /// <param name="versions"></param>
         /// <param name="prefix"></param>
-        public VersioningRoutingApplicationModelProvider(IEnumerable<ApiVersion> versions, string prefix = "v")
+        public ApiVersioningRoutingApplicationModelProvider(IEnumerable<ApiVersion> versions, string prefix = "v{0}")
         {
-            _versionDescriptions = versions.Select(v => (Prefix: prefix + v, Annotation: new ApiVersionAnnotation(v))).ToList();
-            _prefix = prefix;
+            _versionDescriptions = versions.Select(v => (Prefix: string.Format(prefix, v), Annotation: new ApiVersionAnnotation(v))).ToList();
         }
 
         //After all providers

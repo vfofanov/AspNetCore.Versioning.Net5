@@ -39,12 +39,16 @@ namespace OData8VersioningPrototype
         {
             services.AddDbContext<BookStoreContext>(opt => opt.UseInMemoryDatabase("BookLists"));
 
+            var apiVersionPrefix = "api/{0}";
+            const string odataVersionPrefix = "api/{0}/odata";
+            var apiVersions = ApiVersions.List;
+            
             var modelProvider = new CustomODataModelProvider();
             services.AddSingleton<IODataModelProvider>(modelProvider);
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, VersioningRoutingApplicationModelProvider>(_ =>
-                    new VersioningRoutingApplicationModelProvider(ApiVersions.List)));
+                ServiceDescriptor.Transient<IApplicationModelProvider, ApiVersioningRoutingApplicationModelProvider>(
+                    _ => new ApiVersioningRoutingApplicationModelProvider(apiVersions, apiVersionPrefix)));
             
             //NOTE: Hide OData controllers from Api Versioning 
             //services.AddSingleton<IApiControllerFilter, IgnoreODataControllersForVersioningApiControllerFilter>();
@@ -65,16 +69,13 @@ namespace OData8VersioningPrototype
                 })
                 .AddOData(options =>
                 {
-                    var apiVersions = ApiVersions.List;
-                    var routePrefix = RouteODataConstants.VersionRouteComponentPrefixStringFormat;
-                    
                     //NOTE:Replace metadata convension
                     options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
                     options.Conventions.Add(new VersionedMetadataRoutingConvention<CustomMetadataController>());
                     
                     foreach (var version in apiVersions)
                     {
-                        var prefix = string.Format(routePrefix, version);
+                        var prefix = string.Format(odataVersionPrefix, version);
                         options.AddRouteComponents(prefix, modelProvider.GetNameConventionEdmModel(version));
                     }
                     //

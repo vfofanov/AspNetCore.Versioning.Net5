@@ -16,6 +16,10 @@ namespace OData8VersioningPrototype.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
+        /// <summary>
+        /// Get comment V1
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [ApiVersionV1]
         public IEnumerable<WeatherForecast> Get()
@@ -29,14 +33,19 @@ namespace OData8VersioningPrototype.Controllers
             })
             .ToArray();
         }
-        
+
+        /// <summary>
+        /// Foo comment V2
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         [HttpGet]
-        [Route("Foo")]
+        [Route("{count:int}")]
         [ApiVersionV2]
-        public IEnumerable<WeatherForecast> GetFoo()
+        public IEnumerable<WeatherForecast> GetV2(int count = 20)
         {
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return Enumerable.Range(1, count).Select(index => new WeatherForecast
                 {
                     Date = DateTime.Now.AddDays(index),
                     TemperatureC = 100,
@@ -44,6 +53,6 @@ namespace OData8VersioningPrototype.Controllers
                 })
                 .ToArray();
         }
-        
+
     }
 }
