@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="VersioningODataRoutingApplicationModelProvider.cs" />
+      <Compile Remove="VersionedFilterODataRoutingConvention.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AspNetCore.Versioning\AspNetCore.Versioning.csproj" />
+    </ItemGroup>
+
+</Project>
