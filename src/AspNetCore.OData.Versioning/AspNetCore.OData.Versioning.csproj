@@ -5,17 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="VersioningODataRoutingApplicationModelProvider.cs" />
-      <Compile Remove="VersionedFilterODataRoutingConvention.cs" />
+        <Compile Remove="VersioningODataRoutingApplicationModelProvider.cs"/>
+        <Compile Remove="VersionedFilterODataRoutingConvention.cs"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.0.3" />
-        <PackageReference Include="Microsoft.OpenApi.OData" Version="1.0.8" />
+        <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.0.3"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\AspNetCore.Versioning\AspNetCore.Versioning.csproj" />
+        <ProjectReference Include="..\AspNetCore.Versioning\AspNetCore.Versioning.csproj"/>
     </ItemGroup>
 
 </Project>

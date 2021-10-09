@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Versioning", "As
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.OData.Versioning", "AspNetCore.OData.Versioning\AspNetCore.OData.Versioning.csproj", "{9F0FC4E1-E68F-4C3A-A093-3E6DD3D06373}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.Versioning.Extensions.DependencyInjection", "AspNetCore.Versioning.Extensions.DependencyInjection\AspNetCore.Versioning.Extensions.DependencyInjection.csproj", "{35DC3F3A-4CB8-416D-849A-8BEFA27516D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.OData.Versioning.Extensions.DependencyInjection", "AspNetCore.OData.Versioning.Extensions.DependencyInjection\AspNetCore.OData.Versioning.Extensions.DependencyInjection.csproj", "{E782003C-BBEF-4B0C-9D25-FD4A1CBAD092}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{9F0FC4E1-E68F-4C3A-A093-3E6DD3D06373}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F0FC4E1-E68F-4C3A-A093-3E6DD3D06373}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F0FC4E1-E68F-4C3A-A093-3E6DD3D06373}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35DC3F3A-4CB8-416D-849A-8BEFA27516D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35DC3F3A-4CB8-416D-849A-8BEFA27516D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35DC3F3A-4CB8-416D-849A-8BEFA27516D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35DC3F3A-4CB8-416D-849A-8BEFA27516D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E782003C-BBEF-4B0C-9D25-FD4A1CBAD092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E782003C-BBEF-4B0C-9D25-FD4A1CBAD092}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E782003C-BBEF-4B0C-9D25-FD4A1CBAD092}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E782003C-BBEF-4B0C-9D25-FD4A1CBAD092}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
