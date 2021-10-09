@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace AspNetCore.OData.Versioning
 {

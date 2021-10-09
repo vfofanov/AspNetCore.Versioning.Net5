@@ -18,11 +18,8 @@ namespace TestSample.Swagger
         /// </summary>
         public ConfigureSwaggerGenOptions(IApiVersionInfoProvider versionInfoProvider)
         {
-            if (versionInfoProvider == null)
-            {
-                throw new ArgumentNullException(nameof(versionInfoProvider));
-            }
-            _versionInfoProvider = versionInfoProvider;
+            _versionInfoProvider = versionInfoProvider
+                                   ?? throw new ArgumentNullException(nameof(versionInfoProvider));
         }
 
         public void Configure(SwaggerGenOptions options)
@@ -33,10 +30,10 @@ namespace TestSample.Swagger
             {
                 options.SwaggerDoc(info.PathPartName, CreateInfoForApiVersion(info));
             }
-            
+
             // add a custom operation filter which sets default values
             options.OperationFilter<SwaggerDefaultValues>();
-            
+
             // Set the comments path for the Swagger JSON and UI.
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

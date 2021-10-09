@@ -11,13 +11,13 @@ namespace AspNetCore.Versioning
     public sealed class ApiVersioningRoutingApplicationModelProvider : VersioningRoutingApplicationModelProvider
     {
         /// <inheritdoc />
-        public ApiVersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, string prefixFormat = "{0}")
-            : base(versionInfoProvider, prefixFormat)
+        public ApiVersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, IVersioningRoutingPrefixProvider prefixProvider) 
+            : base(versionInfoProvider, prefixProvider)
         {
         }
 
         /// <inheritdoc />
-        public override IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context)
+        protected override IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context)
         {
             return context.Result.Controllers.Where(c => c.Attributes.OfType<ApiControllerAttribute>().Any());
         }

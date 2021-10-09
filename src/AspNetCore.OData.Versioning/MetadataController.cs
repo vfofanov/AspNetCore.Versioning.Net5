@@ -1,6 +1,4 @@
-using AspNetCore.OData.Versioning;
-
-namespace TestSample.Controllers.OData
+namespace AspNetCore.OData.Versioning
 {
     /// <inheritdoc />
     public sealed class MetadataController : MetadataControllerBase

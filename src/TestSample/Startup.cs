@@ -16,7 +16,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using TestSample.Controllers.OData;
 using TestSample.Models.OData;
 using TestSample.Swagger;
 
@@ -44,16 +43,15 @@ namespace TestSample
             
             var modelProvider = new ODataModelProvider();
             services.AddSingleton<IODataModelProvider>(modelProvider);
+            services.AddSingleton<IVersioningRoutingPrefixProvider, VersioningRoutingPrefixProvider>();
 
-            //NOTE: Only for debug
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, DebugCheckApplicationModelProvider>());
-            
             //TODO: Put prefix to Options and resolve providers by DI
+            
             //NOTE: Copies controller's models by versions and set versioned routing 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, ApiVersioningRoutingApplicationModelProvider>(
-                    _ => new ApiVersioningRoutingApplicationModelProvider(apiVersionsProvider, apiVersionPrefix)));
+                ServiceDescriptor.Transient<IApplicationModelProvider, ApiVersioningRoutingApplicationModelProvider>());
+            
+            
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IApplicationModelProvider, ODataVersioningRoutingApplicationModelProvider>(
                     _ => new ODataVersioningRoutingApplicationModelProvider(apiVersionsProvider, odataVersionPrefix)));
@@ -86,7 +84,6 @@ namespace TestSample
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, VersionedODataRoutingMatcherPolicy>());
             
             //Swagger
-            services.AddMvcCore().AddApiExplorer();
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenOptions>();
             services.AddSwaggerGen();
         }

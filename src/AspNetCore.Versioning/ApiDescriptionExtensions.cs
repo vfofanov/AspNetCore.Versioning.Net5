@@ -58,7 +58,7 @@ namespace AspNetCore.Versioning
                 throw new ArgumentNullException( nameof( apiDescription ) );
             }
 
-            var clone = new ApiDescription()
+            var clone = new ApiDescription
             {
                 ActionDescriptor = apiDescription.ActionDescriptor,
                 GroupName = apiDescription.GroupName,
@@ -91,7 +91,7 @@ namespace AspNetCore.Versioning
 
         internal static ApiRequestFormat Clone( this ApiRequestFormat requestFormat )
         {
-            return new ApiRequestFormat()
+            return new ApiRequestFormat
             {
                 Formatter = requestFormat.Formatter,
                 MediaType = requestFormat.MediaType,
@@ -100,7 +100,7 @@ namespace AspNetCore.Versioning
 
         internal static ApiResponseType Clone( this ApiResponseType responseType )
         {
-            var clone = new ApiResponseType()
+            var clone = new ApiResponseType
             {
                 ModelMetadata = responseType.ModelMetadata,
                 StatusCode = responseType.StatusCode,
@@ -115,9 +115,9 @@ namespace AspNetCore.Versioning
             return clone;
         }
 
-        static ApiResponseFormat Clone( this ApiResponseFormat responseFormat )
+        private static ApiResponseFormat Clone( this ApiResponseFormat responseFormat )
         {
-            return new ApiResponseFormat()
+            return new ApiResponseFormat
             {
                 Formatter = responseFormat.Formatter,
                 MediaType = responseFormat.MediaType,

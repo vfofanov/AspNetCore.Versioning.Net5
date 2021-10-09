@@ -13,12 +13,12 @@ namespace AspNetCore.OData.Versioning
     {
         /// <inheritdoc />
         public ODataVersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, string prefixFormat = "{0}/odata")
-            : base(versionInfoProvider, prefixFormat)
+            : base(versionInfoProvider, new DefaultVersioningRoutingPrefixProvider(prefixFormat))
         {
         }
 
         /// <inheritdoc />
-        public override IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context)
+        protected override IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context)
         {
             return context.Result.Controllers.Where(c => c.ControllerType.IsAssignableTo(typeof(MetadataControllerBase)) ||
                                                          c.Attributes.OfType<ODataAttributeRoutingAttribute>().Any());
@@ -35,10 +35,10 @@ namespace AspNetCore.OData.Versioning
         }
 
         /// <inheritdoc />
-        protected override void CleanUpActionSelectors((string Prefix, ApiVersionInfo Info) versionDesc, IList<SelectorModel> selectors)
+        protected override void CleanUpActionSelectors(string prefix, ApiVersionInfo version, IList<SelectorModel> selectors)
         {
             //NOTE: After OData model provider need clean up selectors by version 
-            CleanUpSelectors(versionDesc, selectors);
+            CleanUpSelectors(prefix, version, selectors);
         }
     }
 }

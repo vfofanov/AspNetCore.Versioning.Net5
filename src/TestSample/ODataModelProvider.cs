@@ -27,6 +27,8 @@ namespace TestSample
         /// <inheritdoc />
         protected override void FillEdmModel(AdvODataConventionModelBuilder builder, ApiVersion key)
         {
+            builder.Namespace = "TestNs";
+            
             switch (key)
             {
                 case { MajorVersion: 1, MinorVersion: 0 }:

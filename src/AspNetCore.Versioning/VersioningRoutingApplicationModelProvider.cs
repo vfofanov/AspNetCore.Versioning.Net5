@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -8,21 +9,18 @@ namespace AspNetCore.Versioning
 {
     public abstract class VersioningRoutingApplicationModelProvider : IApplicationModelProvider
     {
-        private readonly List<(string Prefix, ApiVersionInfo Info)> _versionDescriptions;
+        private readonly IApiVersionInfoProvider _versionInfoProvider;
+        private readonly IVersioningRoutingPrefixProvider _prefixProvider;
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="versionInfoProvider"></param>
-        /// <param name="prefixFormat"></param>
-        public VersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, string prefixFormat = "{0}")
+        /// <param name="prefixProvider"></param>
+        protected VersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, IVersioningRoutingPrefixProvider prefixProvider)
         {
-            _versionDescriptions = versionInfoProvider.Versions.Select(v => (Prefix: GeneratePrefix(prefixFormat, v), Info: v)).ToList();
-        }
-
-        private static string GeneratePrefix(string prefixFormat, ApiVersionInfo v)
-        {
-            return string.Format("/" + prefixFormat.TrimStart('/'), v.PathPartName).TrimEnd('/');
+            _versionInfoProvider = versionInfoProvider ?? throw new ArgumentNullException(nameof(versionInfoProvider));
+            _prefixProvider = prefixProvider ?? throw new ArgumentNullException(nameof(prefixProvider));
         }
 
         //After all providers
@@ -48,29 +46,31 @@ namespace AspNetCore.Versioning
             }
         }
 
-        public abstract IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context);
+        protected abstract IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context);
 
-        private void ProcessController(ControllerModel controller, (string Prefix, ApiVersionInfo Info) versionDesc)
+        private void ProcessController(ControllerModel controller, ApiVersionInfo version)
         {
-            controller.SetProperty(versionDesc.Info.Annotation);
-            ApplyRoutePrefix(controller, versionDesc);
+            var prefix = _prefixProvider.GetPrefix(controller, version);
+            
+            controller.SetProperty(version.Annotation);
+            ApplyRoutePrefix(controller, prefix);
 
-            CleanUpControllerSelectors(versionDesc, controller.Selectors);
+            CleanUpControllerSelectors(prefix, version, controller.Selectors);
 
-            controller.ApiExplorer.GroupName = versionDesc.Info.PathPartName;
+            controller.ApiExplorer.GroupName = version.PathPartName;
             controller.ApiExplorer.IsVisible = true;
                 
             for (var i = 0; i < controller.Actions.Count; i++)
             {
                 var action = controller.Actions[i];
                 
-                action.ApiExplorer.GroupName = versionDesc.Info.PathPartName;
+                action.ApiExplorer.GroupName = version.PathPartName;
                 action.ApiExplorer.IsVisible = true;
                 
-                if (IsApiVersionMatch(action.Attributes, versionDesc.Info.Version))
+                if (IsApiVersionMatch(action.Attributes, version.Version))
                 {
-                    action.SetProperty(versionDesc.Info.Annotation);
-                    CleanUpActionSelectors(versionDesc, action.Selectors);
+                    action.SetProperty(version.Annotation);
+                    CleanUpActionSelectors(prefix, version, action.Selectors);
                 }
                 else
                 {
@@ -80,64 +80,68 @@ namespace AspNetCore.Versioning
             }
         }
 
-        
-        protected virtual void CleanUpControllerSelectors((string Prefix, ApiVersionInfo Info) versionDesc, IList<SelectorModel> selectors)
+
+        protected virtual void CleanUpControllerSelectors(string prefix, ApiVersionInfo version, IList<SelectorModel> selectors)
         {
-            CleanUpSelectors(versionDesc, selectors);
+            CleanUpSelectors(prefix, version, selectors);
         }
-        protected virtual void CleanUpActionSelectors((string Prefix, ApiVersionInfo Info) versionDesc, IList<SelectorModel> selectors)
+
+        protected virtual void CleanUpActionSelectors(string prefix, ApiVersionInfo version, IList<SelectorModel> selectors)
         {
         }
 
-        protected void CleanUpSelectors((string Prefix, ApiVersionInfo Info) versionDesc, IList<SelectorModel> selectors)
+        /// <summary>
+        /// Clean up selectors and setup version annotation
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="version"></param>
+        /// <param name="selectors"></param>
+        protected void CleanUpSelectors(string prefix, ApiVersionInfo version, IList<SelectorModel> selectors)
         {
             for (var i = 0; i < selectors.Count; i++)
             {
                 var selector = selectors[i];
                 if (selector.AttributeRouteModel != null &&
-                    !selector.AttributeRouteModel.Template.StartsWith(versionDesc.Prefix))
+                    !selector.AttributeRouteModel.Template.StartsWith(prefix))
                 {
                     selectors.RemoveAt(i);
                     i--;
                 }
                 else
                 {
-                    selector.EndpointMetadata.Add(versionDesc.Info.Annotation);
+                    selector.EndpointMetadata.Add(version.Annotation);
                 }
             }
         }
 
-        private static void ApplyRoutePrefix(ControllerModel controller, (string Prefix, ApiVersionInfo Info) versionDesc)
+        private static void ApplyRoutePrefix(ControllerModel controller, string prefix)
         {
             foreach (var selector in controller.Selectors)
             {
-                if (selector.AttributeRouteModel != null)
+                if (selector.AttributeRouteModel == null)
+                {
+                    selector.AttributeRouteModel = new AttributeRouteModel { Template = prefix + "/[controller]" };
+                }
+                else
                 {
                     var routeModel = selector.AttributeRouteModel;
                     if (routeModel.IsAbsoluteTemplate)
                     {
                         continue;
                     }
-                    selector.AttributeRouteModel = new AttributeRouteModel { Template = versionDesc.Prefix + "/" + routeModel.Template.TrimStart('/') };
-                }
-                else
-                {
-                    selector.AttributeRouteModel = new AttributeRouteModel
-                    {
-                        Template = versionDesc.Prefix + "/[controller]"
-                    };
+                    selector.AttributeRouteModel = new AttributeRouteModel(routeModel) { Template = prefix + "/" + routeModel.Template.TrimStart('/') };
                 }
             }
         }
 
-        private IReadOnlyList<(string Prefix, ApiVersionInfo Info)> GetVersions(IReadOnlyList<object> attributes)
+        private IReadOnlyList<ApiVersionInfo> GetVersions(IReadOnlyList<object> attributes)
         {
             if (IsApiVersionNeutral(attributes))
             {
-                return _versionDescriptions.AsReadOnly();
+                return Versions;
             }
 
-            var result = new List<(string Prefix, ApiVersionInfo Info)>(_versionDescriptions.Count);
+            var result = new List<ApiVersionInfo>(Versions.Count);
             for (var i = 0; i < attributes.Count; i++)
             {
                 var attribute = attributes[i];
@@ -148,15 +152,17 @@ namespace AspNetCore.Versioning
 
                 foreach (var version in versionProvider.Versions)
                 {
-                    if (result.FindIndex(x => x.Info == version) >= 0)
+                    if (result.FindIndex(x => x.Version == version) >= 0)
                     {
                         continue;
                     }
-                    result.Add(_versionDescriptions.Find(x => x.Info == version));
+                    result.Add(Versions.First(x => x.Version == version));
                 }
             }
             return result;
         }
+
+        private IReadOnlyList<ApiVersionInfo> Versions => _versionInfoProvider.Versions;
 
         private static bool IsApiVersionNeutral(IReadOnlyList<object> attributes)
         {
@@ -187,12 +193,9 @@ namespace AspNetCore.Versioning
                         return true;
                     case IApiVersionProvider versionProvider:
                     {
-                        for (var v = 0; v < versionProvider.Versions.Count; v++)
+                        if (versionProvider.Versions.Any(v => v == version))
                         {
-                            if (versionProvider.Versions[v] == version)
-                            {
-                                return true;
-                            }
+                            return true;
                         }
                         result = false;
                         break;
