@@ -30,7 +30,7 @@ namespace AspNetCore.Versioning
         /// <inheritdoc />
         public virtual void OnProvidersExecuted(ApplicationModelProviderContext context)
         {
-            var apiControllers = GetApiControllers(context).ToList();
+            var apiControllers = GetControllers(context).ToList();
 
             foreach (var controller in apiControllers)
             {
@@ -46,7 +46,7 @@ namespace AspNetCore.Versioning
             }
         }
 
-        protected abstract IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context);
+        protected abstract IEnumerable<ControllerModel> GetControllers(ApplicationModelProviderContext context);
 
         private void ProcessController(ControllerModel controller, ApiVersionInfo version)
         {
@@ -57,14 +57,14 @@ namespace AspNetCore.Versioning
 
             CleanUpControllerSelectors(prefix, version, controller.Selectors);
 
-            controller.ApiExplorer.GroupName = version.PathPartName;
+            controller.ApiExplorer.GroupName = version.RoutePathName;
             controller.ApiExplorer.IsVisible = true;
                 
             for (var i = 0; i < controller.Actions.Count; i++)
             {
                 var action = controller.Actions[i];
                 
-                action.ApiExplorer.GroupName = version.PathPartName;
+                action.ApiExplorer.GroupName = version.RoutePathName;
                 action.ApiExplorer.IsVisible = true;
                 
                 if (IsApiVersionMatch(action.Attributes, version.Version))

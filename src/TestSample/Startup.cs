@@ -1,11 +1,11 @@
-using System.Linq;
 using AspNetCore.OData.Versioning;
+using AspNetCore.OData.Versioning.Extensions.DependencyInjection;
 using AspNetCore.Versioning;
+using AspNetCore.Versioning.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Routing.Conventions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OData;
 using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -35,29 +36,8 @@ namespace TestSample
         {
             services.AddDbContext<BookStoreContext>(opt => opt.UseInMemoryDatabase("BookLists"));
 
-            const string apiVersionPrefix = "api/{0}";
-            const string odataVersionPrefix = "api/{0}/odata";
-            
-            var apiVersionsProvider = ApiVersions.GetVersionsProvider();
-            services.AddSingleton(apiVersionsProvider);
-            
-            var modelProvider = new ODataModelProvider();
-            services.AddSingleton<IODataModelProvider>(modelProvider);
-            services.AddSingleton<IVersioningRoutingPrefixProvider, VersioningRoutingPrefixProvider>();
+            services.AddVersioningForApi<ApiVersionInfoProviderFactory, VersioningRoutingPrefixProvider>();
 
-            //TODO: Put prefix to Options and resolve providers by DI
-            
-            //NOTE: Copies controller's models by versions and set versioned routing 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, ApiVersioningRoutingApplicationModelProvider>());
-            
-            
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, ODataVersioningRoutingApplicationModelProvider>(
-                    _ => new ODataVersioningRoutingApplicationModelProvider(apiVersionsProvider, odataVersionPrefix)));
-            
-            
-           
             services.AddControllers(options =>
                 {
                     options.Conventions.Add(new SkipStandardODataMetadataControllerRoutingConvention());
@@ -66,20 +46,14 @@ namespace TestSample
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 })
-                .AddOData(options =>
-                {
-                    //NOTE:Replace metadata convension
-                    options.Conventions.Remove(options.Conventions.OfType<MetadataRoutingConvention>().First());
-                    options.Conventions.Add(new VersionedMetadataRoutingConvention<MetadataController>());
-                    
-                    foreach (var version in apiVersionsProvider.Versions)
+                .AddVersioningOData<ODataModelProvider>(versioningOptions =>
                     {
-                        var prefix = string.Format(odataVersionPrefix, version.PathPartName);
-                        options.AddRouteComponents(prefix, modelProvider.GetNameConventionEdmModel(version.Version));
-                    }
-                    
-                    options.EnableQueryFeatures();
-                });
+                        versioningOptions.VersionPrefixTemplate = "api/{0}/odata";
+                    },
+                    options =>
+                    {
+                        options.EnableQueryFeatures();
+                    });
             
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, VersionedODataRoutingMatcherPolicy>());
             
@@ -105,7 +79,7 @@ namespace TestSample
                 var versionProvider = app.ApplicationServices.GetRequiredService<IApiVersionInfoProvider>();
                 foreach (var apiVersion in versionProvider.Versions)
                 {
-                    var name = apiVersion.PathPartName;
+                    var name = apiVersion.RoutePathName;
                     options.SwaggerEndpoint($"/swagger/{name}/swagger.json", name);
                 }
                 options.RoutePrefix = string.Empty;

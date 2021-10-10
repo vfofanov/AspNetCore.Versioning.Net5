@@ -8,7 +8,7 @@ using Microsoft.OData.ModelBuilder;
 
 namespace AspNetCore.OData.Versioning
 {
-    public abstract class ODataModelProvider<TKey> : IODataModelProvider
+    public abstract class ODataModelProvider<TKey> : IODataModelProvider, IODataConventionModelProvider
     {
 
         private readonly ConcurrentDictionary<TKey, IEdmModel> _cached = new();
@@ -16,7 +16,7 @@ namespace AspNetCore.OData.Versioning
         public IEdmModel GetNameConventionEdmModel(ApiVersion apiVersion)
         {
             var key = GetNameConventionKey(apiVersion);
-            return _cached.GetOrAdd(key, key => CreateNameConventionModel(apiVersion, key));
+            return _cached.GetOrAdd(key, k => CreateNameConventionModel(apiVersion, k));
         }
 
         public IEdmModel GetEdmModel(ApiVersion apiVersion, IServiceProvider serviceProvider)

@@ -6,12 +6,12 @@
 
     <ItemGroup>
         <!--        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2"/>-->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\AspNetCore.Versioning\AspNetCore.Versioning.csproj" />
+        <ProjectReference Include="..\AspNetCore.Versioning\AspNetCore.Versioning.csproj"/>
     </ItemGroup>
 
 </Project>

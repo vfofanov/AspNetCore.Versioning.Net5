@@ -17,7 +17,7 @@ namespace AspNetCore.Versioning
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context)
+        protected override IEnumerable<ControllerModel> GetControllers(ApplicationModelProviderContext context)
         {
             return context.Result.Controllers.Where(c => c.Attributes.OfType<ApiControllerAttribute>().Any());
         }

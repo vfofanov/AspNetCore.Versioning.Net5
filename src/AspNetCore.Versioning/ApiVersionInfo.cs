@@ -28,14 +28,14 @@ namespace AspNetCore.Versioning
             }
 
             Version = version;
-            PathPartName = versionApiName ?? version.ToString();
+            RoutePathName = versionApiName ?? version.ToString();
             Annotation = new ApiVersionAnnotation(version);
         }
 
         /// <summary>
         /// Route path part for versioning and Api Explorer group name
         /// </summary>
-        public string PathPartName { get; }
+        public string RoutePathName { get; }
 
         /// <summary>
         /// Api version

@@ -9,11 +9,5 @@ namespace AspNetCore.OData.Versioning
     public interface IODataModelProvider
     {
         IEdmModel GetEdmModel(ApiVersion version, IServiceProvider provider);
-        
-        /// <summary>
-        /// Model for run standard entites' name conventions for odata controllers.
-        /// </summary>
-        /// <returns></returns>
-        IEdmModel GetNameConventionEdmModel(ApiVersion apiVersion);
     }
 }

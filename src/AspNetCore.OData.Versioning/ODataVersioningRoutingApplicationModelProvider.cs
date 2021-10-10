@@ -3,6 +3,7 @@ using System.Linq;
 using AspNetCore.Versioning;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.OData.Routing.Attributes;
+using Microsoft.Extensions.Options;
 
 namespace AspNetCore.OData.Versioning
 {
@@ -12,13 +13,13 @@ namespace AspNetCore.OData.Versioning
     public sealed class ODataVersioningRoutingApplicationModelProvider : VersioningRoutingApplicationModelProvider
     {
         /// <inheritdoc />
-        public ODataVersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, string prefixFormat = "{0}/odata")
-            : base(versionInfoProvider, new DefaultVersioningRoutingPrefixProvider(prefixFormat))
+        public ODataVersioningRoutingApplicationModelProvider(IApiVersionInfoProvider versionInfoProvider, IOptions<ODataVersioningOptions> options)
+            : base(versionInfoProvider, new DefaultVersioningRoutingPrefixProvider(options.Value.VersionPrefixTemplate))
         {
         }
 
         /// <inheritdoc />
-        protected override IEnumerable<ControllerModel> GetApiControllers(ApplicationModelProviderContext context)
+        protected override IEnumerable<ControllerModel> GetControllers(ApplicationModelProviderContext context)
         {
             return context.Result.Controllers.Where(c => c.ControllerType.IsAssignableTo(typeof(MetadataControllerBase)) ||
                                                          c.Attributes.OfType<ODataAttributeRoutingAttribute>().Any());

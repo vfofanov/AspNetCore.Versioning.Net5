@@ -2,9 +2,9 @@ namespace AspNetCore.Versioning
 {
     public static class VersioningRoutingPrefixHelper
     {
-        public static string GeneratePrefix(string prefixFormat, ApiVersionInfo v)
+        public static string GeneratePrefix(string prefixFormatTemplate, ApiVersionInfo v)
         {
-            return string.Format("/" + prefixFormat.TrimStart('/'), v.PathPartName).TrimEnd('/');
+            return "/" + string.Format(prefixFormatTemplate, v.RoutePathName).Trim('/');
         }
     }
 }

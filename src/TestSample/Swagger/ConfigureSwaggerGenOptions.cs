@@ -28,7 +28,7 @@ namespace TestSample.Swagger
             // note: you might choose to skip or document deprecated API versions differently
             foreach (var info in _versionInfoProvider.Versions)
             {
-                options.SwaggerDoc(info.PathPartName, CreateInfoForApiVersion(info));
+                options.SwaggerDoc(info.RoutePathName, CreateInfoForApiVersion(info));
             }
 
             // add a custom operation filter which sets default values
